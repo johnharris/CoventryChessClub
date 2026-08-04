@@ -6,6 +6,8 @@ The site is not yet on the internet. That comes next, once hosting is arranged. 
 
 Each page is shown twice, because the site adapts to the device: the **desktop** version is what you would see on a computer, and the **mobile** version is what you would see on a phone. Click any link to view the full image.
 
+If you would rather read through everything in one go, there is a **[single PDF of all the pages](../coventry-chess-club-website-preview.pdf)** (2.3 MB) that you can download, print or forward.
+
 ---
 
 ## The public website
