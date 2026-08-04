@@ -1,0 +1,278 @@
+@import 'tailwindcss';
+
+/* lichess's own board component styles: base geometry, brown board, cburnett pieces */
+@import '../../node_modules/chessground/assets/chessground.base.css';
+@import '../../node_modules/chessground/assets/chessground.brown.css';
+@import '../../node_modules/chessground/assets/chessground.cburnett.css';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+@theme {
+    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+    /* Club palette: deep board green with warm neutrals */
+    --color-club-50: #f2f7f4;
+    --color-club-100: #dfeae3;
+    --color-club-200: #bfd5c8;
+    --color-club-300: #94b8a4;
+    --color-club-400: #679680;
+    --color-club-500: #477a64;
+    --color-club-600: #35604f;
+    --color-club-700: #2b4d41;
+    --color-club-800: #253e35;
+    --color-club-900: #1d3129;
+    --color-club-950: #101c17;
+
+    /* Board colours, taken from lichess's default brown theme */
+    --color-board-light: #f0d9b5;
+    --color-board-dark: #b58863;
+    --color-board-highlight: #9bc700;
+}
+
+/* ---------------------------------------------------------------------------
+   Base
+--------------------------------------------------------------------------- */
+
+@layer base {
+    html {
+        scroll-behavior: smooth;
+        -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+        @apply bg-stone-50 text-stone-800 antialiased;
+    }
+
+    :focus-visible {
+        @apply outline-2 outline-offset-2 outline-club-600;
+    }
+}
+
+/* ---------------------------------------------------------------------------
+   Chess boards
+   Every board is a square that scales with its container, so diagrams work at
+   any width down to a narrow phone with no JavaScript resizing.
+--------------------------------------------------------------------------- */
+
+.board-frame {
+    @apply relative w-full overflow-hidden rounded-lg shadow-sm ring-1 ring-stone-900/10;
+    aspect-ratio: 1 / 1;
+}
+
+.board-frame .cg-wrap {
+    width: 100%;
+    height: 100%;
+}
+
+/* Coordinates are hidden on very narrow phones, where they are unreadable */
+@media (max-width: 340px) {
+    .cg-wrap coords {
+        display: none;
+    }
+}
+
+/* Before the board initialises, draw empty squares so the layout never jumps */
+.board-frame[data-board-pending='true']::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: var(--color-board-light);
+    background-image:
+        linear-gradient(45deg, var(--color-board-dark) 25%, transparent 25%, transparent 75%, var(--color-board-dark) 75%),
+        linear-gradient(45deg, var(--color-board-dark) 25%, transparent 25%, transparent 75%, var(--color-board-dark) 75%);
+    background-size: 25% 25%;
+    background-position: 0 0, 12.5% 12.5%;
+}
+
+/* ---------------------------------------------------------------------------
+   Move list — lichess-style notation
+--------------------------------------------------------------------------- */
+
+.move-list {
+    @apply grid text-[0.95rem] leading-tight;
+    grid-template-columns: 2.6rem 1fr 1fr;
+}
+
+.move-list .move-number {
+    @apply flex items-center bg-stone-100 px-2 py-1.5 font-medium text-stone-500 tabular-nums;
+}
+
+.move-list .move {
+    @apply cursor-pointer px-2 py-1.5 text-left font-medium text-stone-700 transition-colors;
+    font-feature-settings: 'tnum';
+}
+
+.move-list .move:hover {
+    @apply bg-club-100 text-club-900;
+}
+
+.move-list .move.is-current {
+    @apply bg-club-600 text-white;
+}
+
+.move-list .move.is-empty {
+    @apply cursor-default;
+}
+
+.move-list .move-comment {
+    @apply col-span-3 border-l-2 border-club-300 bg-stone-50 px-3 py-2 text-sm text-stone-600 italic;
+}
+
+.move .nag {
+    @apply ml-0.5 font-bold;
+}
+
+/* ---------------------------------------------------------------------------
+   Prose: post and page bodies
+--------------------------------------------------------------------------- */
+
+.prose-club {
+    @apply text-[1.0625rem] leading-relaxed text-stone-700;
+}
+
+.prose-club > * + * {
+    @apply mt-5;
+}
+
+.prose-club h2 {
+    @apply mt-9 text-2xl font-semibold tracking-tight text-stone-900;
+}
+
+.prose-club h3 {
+    @apply mt-7 text-xl font-semibold tracking-tight text-stone-900;
+}
+
+.prose-club h4 {
+    @apply mt-6 text-lg font-semibold text-stone-900;
+}
+
+.prose-club a {
+    @apply font-medium text-club-700 underline decoration-club-300 decoration-2 underline-offset-2 hover:decoration-club-600;
+}
+
+.prose-club strong {
+    @apply font-semibold text-stone-900;
+}
+
+.prose-club ul {
+    @apply list-disc space-y-1.5 pl-6;
+}
+
+.prose-club ol {
+    @apply list-decimal space-y-1.5 pl-6;
+}
+
+.prose-club blockquote {
+    @apply border-l-4 border-club-300 bg-club-50/60 py-3 pr-4 pl-5 text-stone-600 italic;
+}
+
+.prose-club code {
+    @apply rounded bg-stone-100 px-1.5 py-0.5 font-mono text-[0.875em] text-stone-800;
+}
+
+.prose-club pre {
+    @apply overflow-x-auto rounded-lg bg-stone-900 p-4 text-sm text-stone-100;
+}
+
+.prose-club pre code {
+    @apply bg-transparent p-0 text-inherit;
+}
+
+.prose-club table {
+    @apply w-full border-collapse text-left text-sm;
+}
+
+.prose-club th {
+    @apply border-b-2 border-stone-300 px-3 py-2 font-semibold text-stone-900;
+}
+
+.prose-club td {
+    @apply border-b border-stone-200 px-3 py-2 align-top;
+}
+
+.prose-club img {
+    @apply rounded-lg;
+}
+
+.prose-club hr {
+    @apply my-8 border-stone-200;
+}
+
+/* Wide tables scroll on phones rather than squashing */
+@media (max-width: 640px) {
+    .prose-club table {
+        @apply block overflow-x-auto whitespace-nowrap;
+    }
+}
+
+/* ---------------------------------------------------------------------------
+   Small shared pieces
+--------------------------------------------------------------------------- */
+
+.badge {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold tracking-wide uppercase;
+}
+
+.btn,
+.btn-primary,
+.btn-secondary,
+.btn-ghost,
+.btn-danger {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2;
+}
+
+.btn-primary {
+    @apply bg-club-700 text-white hover:bg-club-800 focus-visible:outline-club-700;
+}
+
+.btn-secondary {
+    @apply bg-white text-stone-700 ring-1 ring-stone-300 ring-inset hover:bg-stone-50;
+}
+
+.btn-ghost {
+    @apply text-stone-600 hover:bg-stone-100 hover:text-stone-900;
+}
+
+.btn-danger {
+    @apply bg-red-600 text-white hover:bg-red-700 focus-visible:outline-red-600;
+}
+
+.btn-icon {
+    @apply inline-flex h-9 w-9 items-center justify-center rounded-lg text-stone-500 transition-colors hover:bg-stone-100 hover:text-stone-900 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent;
+}
+
+.field-label {
+    @apply mb-1.5 block text-sm font-medium text-stone-700;
+}
+
+.field-input {
+    @apply block w-full rounded-lg border-0 bg-white px-3.5 py-2.5 text-stone-900 ring-1 ring-stone-300 ring-inset placeholder:text-stone-400 focus:ring-2 focus:ring-club-600 focus:ring-inset;
+}
+
+.field-hint {
+    @apply mt-1.5 text-sm text-stone-500;
+}
+
+.field-error {
+    @apply mt-1.5 text-sm font-medium text-red-600;
+}
+
+.card {
+    @apply rounded-xl bg-white ring-1 ring-stone-900/5;
+}
+
+/* Skip link for keyboard and screen reader users */
+.skip-link {
+    @apply sr-only;
+}
+
+.skip-link:focus {
+    @apply not-sr-only fixed top-3 left-3 z-50 rounded-lg bg-club-800 px-4 py-2 text-sm font-semibold text-white;
+}
+
+@media print {
+    .no-print {
+        display: none !important;
+    }
+}
