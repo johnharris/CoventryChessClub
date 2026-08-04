@@ -55,6 +55,34 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
+        // John Harris, club administrator.
+        $johnEmail = env('JOHN_EMAIL', 'johnrharris174@fastmail.com');
+
+        $john = User::updateOrCreate(
+            ['email' => $johnEmail],
+            [
+                'name' => 'John Harris',
+                'display_name' => 'John Harris',
+                'password' => Hash::make(env('JOHN_PASSWORD', 'password')),
+                'role' => User::ROLE_ADMIN,
+                'is_active' => true,
+                'email_verified_at' => now(),
+                'bio' => 'Club administrator. Looks after the website and the club\'s online presence.',
+            ]
+        );
+
+        WhitelistEntry::updateOrCreate(
+            ['email' => $john->email],
+            [
+                'name' => $john->name,
+                'role' => User::ROLE_ADMIN,
+                'notes' => 'Club administrator. Runs the website.',
+                'claimed_at' => now(),
+                'claimed_by_user_id' => $john->id,
+                'invite_token' => null,
+            ]
+        );
+
         // An example club member, to show the difference between the two roles.
         $memberEmail = env('MEMBER_EMAIL', 'member@coventrychessclub.test');
 

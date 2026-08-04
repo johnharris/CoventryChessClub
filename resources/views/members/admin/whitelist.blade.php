@@ -73,17 +73,22 @@
                                 @if ($entry->name)
                                     <p class="text-sm text-stone-500">{{ $entry->email }}</p>
                                 @endif
+                                {{--
+                                    Say who invited someone, not who claimed the
+                                    invitation: the claimer is always the person
+                                    named above, so repeating them here reads as
+                                    though they invited themselves. Seeded
+                                    accounts have no inviter, so that clause is
+                                    omitted rather than left dangling.
+                                --}}
                                 <p class="mt-1 text-sm text-stone-500">
                                     @if ($entry->isClaimed())
-                                        Account created {{ $entry->claimed_at->format('j M Y') }}
-                                        @if ($entry->claimedBy)
-                                            by {{ $entry->claimedBy->publicName() }}
-                                        @endif
+                                        Account set up {{ $entry->claimed_at->format('j M Y') }}
                                     @else
                                         Invitation not used yet
                                     @endif
                                     @if ($entry->invitedBy)
-                                        · added by {{ $entry->invitedBy->publicName() }}
+                                        · invited by {{ $entry->invitedBy->publicName() }}
                                     @endif
                                 </p>
                                 @if ($entry->notes)
