@@ -4,6 +4,8 @@ The website for Coventry Chess Club — a blog-style site where members publish 
 
 Built with **Laravel 13** and **PHP 8.3**, with boards by **Chessground** (the board component from lichess.org) and rules by **chess.js**.
 
+> **Want to see it without installing anything?** [Browse the screenshots](docs/screenshots/) — every page of the site, on both a computer and a phone, with a plain-English description of each. This is the page to send to club members.
+
 ---
 
 ## What the site does
@@ -122,6 +124,7 @@ tests/Feature/            The test suite
 |---|---|
 | **`BUILD_STEPS.md`** | How the site was built, step by step, with every command and the reasoning behind each decision |
 | **`DEPLOYMENT.md`** | Putting the site live: choosing a host, uploading, HTTPS, backups, troubleshooting |
+| **[`docs/screenshots/`](docs/screenshots/)** | Every page of the site pictured on desktop and phone, written for club members rather than developers |
 
 ---
 
