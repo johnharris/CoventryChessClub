@@ -18,6 +18,16 @@ import { parsePgn } from './pgn';
 
 const AUTOPLAY_MS = 1400;
 
+/**
+ * Whose turn it is in a position, as chessground names colours.
+ *
+ * Chessground does not read the active colour from the FEN — `turnColor` stays at
+ * its default of white unless told otherwise — so it has to be set explicitly
+ * every time the position changes. Getting this wrong puts the check highlight on
+ * the wrong king, because `check: true` means "whoever is to move".
+ */
+const turnColour = (fen) => (fen.split(' ')[1] === 'b' ? 'black' : 'white');
+
 class GameViewer {
     constructor(root) {
         this.root = root;
@@ -47,6 +57,7 @@ class GameViewer {
 
         this.board = Chessground(this.boardEl, {
             fen: this.game.startFen,
+            turnColor: turnColour(this.game.startFen),
             orientation: this.orientation,
             viewOnly: true,
             coordinates: true,
@@ -267,11 +278,19 @@ class GameViewer {
         this.index = clamped;
 
         const current = clamped >= 0 ? moves[clamped] : null;
+        const fen = current ? current.fen : startFen;
+
+        // The side in check after a checking move is the side now to move, i.e.
+        // the mover's opponent. Pass that colour explicitly: a bare `true` would
+        // be resolved against chessground's `turnColor`, which it never derives
+        // from the FEN, so every check would land on the white king.
+        const toMove = turnColour(fen);
 
         this.board.set({
-            fen: current ? current.fen : startFen,
+            fen,
+            turnColor: toMove,
             lastMove: current ? [current.from, current.to] : undefined,
-            check: current?.check ?? false,
+            check: current?.check ? toMove : false,
         });
 
         this.moveButtons?.forEach((button) => {
