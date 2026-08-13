@@ -58,7 +58,8 @@ confirmed, so that is the place to check before travelling to a match.
 
 ## Home matches
 
-Home fixtures are played at the Massey Ferguson Social Club, Broad Lane, Coventry.
+Home fixtures are played at the Massey Ferguson Social Club, Banner Lane, Coventry,
+CV5 7NL. Please note that the entrance is on Broad Lane.
 There is parking on site and a bar. Visiting teams are always welcome — please arrive
 for a 7:30pm start.
 MD,
@@ -77,11 +78,13 @@ league chess, speak to a team captain on a club night, or
 
 ## Coventry & District Chess League
 
-We enter teams across the divisions of the
+We enter **six teams** across the divisions of the
 [Coventry & District Chess League](http://covchessleague.blogspot.com/). Our A team
-plays in the First Division, with further sides in the Second and Third Divisions.
-The exact number of teams varies from season to season according to how many players
-are available — recent seasons have seen up to six sides in the league.
+plays in the First Division, with further sides in the Second and Third Divisions,
+so there is a place for players of every standard.
+
+Alongside the league sides, a number of members simply play friendly games on a club
+night without committing to a team.
 
 Matches are played on Tuesday evenings, home and away, with a 7:30pm start.
 
@@ -113,8 +116,10 @@ MD,
                 'is_published' => true,
                 'body' => <<<'MD'
 One-to-one coaching is available to both adults and juniors through the club, given by
-**Rhys Edwards**, who has played board one for our A team in the First Division of the
-Coventry & District League.
+our qualified trainers, **Rhys Edwards** and **Ed Goodwin**. Rhys has played board one
+for our A team in the First Division of the Coventry & District League.
+
+Coaching is arranged privately with the trainer and there is a fee for sessions.
 
 ## What coaching covers
 
@@ -135,9 +140,9 @@ few seasons.
 
 ## Arranging a session
 
-Speak to Rhys on a club night, or [contact the club](/contact) and we will put you in
-touch. Please mention the player's age and roughly how long they have been playing, as
-that helps in matching the sessions to the player.
+Speak to either trainer on a club night, or [contact the club](/contact) and we will put
+you in touch. Please mention the player's age and roughly how long they have been
+playing, as that helps in matching the sessions to the player.
 MD,
             ],
             [
@@ -147,10 +152,16 @@ MD,
                 'show_in_nav' => true,
                 'is_published' => true,
                 'body' => <<<'MD'
-Our junior section runs on Tuesday evenings before the main club night, coaching young
-players from the basic moves through to their first competitive games. Places are
-limited and there is often a waiting list, so please
-[get in touch](/contact) before bringing a young player along for the first time.
+Our Junior section is every **Tuesday starting at 4:30pm**, costs **£5 per session**, and
+is held at **St Oswald's Church Hall, Tile Hill** — a different venue from our main club
+night. Spots for this session fill up very quickly and must be pre-booked, so please
+[check with us](/contact) before attending.
+
+Sessions coach young players from the basic moves through to their first competitive
+games.
+
+> **Please note:** the junior session is at St Oswald's Church Hall, Tile Hill, not at
+> the Massey Ferguson Social Club where the main club night is held.
 
 ## What a junior session looks like
 
@@ -174,10 +185,10 @@ Parents are welcome to stay for sessions.
 
 ## Moving up to club and league chess
 
-Juniors who are ready are encouraged to stay on for the main club night and, in time, to
-play in league matches — several of our league players came up through the junior
-section. [One-to-one coaching](/1-1-coaching) is also available for juniors who want to
-push on faster.
+Juniors who are ready are welcome to come along to the main club night at the Massey
+Ferguson Social Club and, in time, to play in league matches — several of our league
+players came up through the junior section. [One-to-one coaching](/1-1-coaching) is also
+available for juniors who want to push on faster.
 
 ## A word to parents
 

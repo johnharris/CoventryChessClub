@@ -302,8 +302,8 @@ interesting, and keep turning up.
 
 **New to the club?** We meet every Tuesday at the Massey Ferguson Social Club from
 7:30pm — just come along, or [send us a message](/contact) first if you prefer. Our
-[junior section](/juniors) runs earlier on the same evening, and
-[one-to-one coaching](/1-1-coaching) is available for both adults and juniors.
+[junior section](/juniors) runs on Tuesday afternoons at St Oswald's Church Hall, Tile
+Hill, and [one-to-one coaching](/1-1-coaching) is available for both adults and juniors.
 MD,
             ],
             [

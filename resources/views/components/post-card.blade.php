@@ -9,7 +9,16 @@
 @endphp
 
 <article class="card group flex flex-col overflow-hidden transition-shadow hover:shadow-md">
-    @if ($showBoard && $post->type === \App\Models\Post::TYPE_POSITION && $post->fen)
+    {{-- A photograph takes precedence over a board: if a member has chosen a lead
+         image, that is what they want readers to see first. --}}
+    @if ($post->hasFeaturedImage())
+        <a href="{{ route('posts.show', $post) }}" class="block aspect-[3/2] overflow-hidden bg-stone-100">
+            <img src="{{ $post->featuredImage->thumbUrl() }}"
+                 alt="{{ $post->featuredImage->alt_text ?: $post->title }}"
+                 class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                 loading="lazy">
+        </a>
+    @elseif ($showBoard && $post->type === \App\Models\Post::TYPE_POSITION && $post->fen)
         <div class="border-b border-stone-100 bg-stone-50 p-4">
             <div class="mx-auto max-w-56">
                 @include('partials.static-board', [

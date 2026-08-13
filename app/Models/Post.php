@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
 
 #[Fillable([
     'user_id', 'title', 'slug', 'type', 'excerpt', 'body',
+    'featured_image_id', 'featured_image_caption',
     'fen', 'orientation', 'side_to_move', 'caption', 'solution',
     'pgn', 'white_player', 'black_player', 'result', 'event', 'played_on',
     'is_published', 'is_featured', 'published_at',
@@ -44,6 +45,15 @@ class Post extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * The lead photograph, shown above the article and used as the listing
+     * thumbnail. Optional: chess posts usually lead with a board instead.
+     */
+    public function featuredImage(): BelongsTo
+    {
+        return $this->belongsTo(Media::class, 'featured_image_id');
     }
 
     /* ---------------------------------------------------------------------
@@ -118,6 +128,14 @@ class Post extends Model
     public function displayDate(): string
     {
         return ($this->published_at ?? $this->created_at)->format('j F Y');
+    }
+
+    /**
+     * Whether a listing card should lead with a photograph rather than a board.
+     */
+    public function hasFeaturedImage(): bool
+    {
+        return $this->featured_image_id !== null && $this->featuredImage !== null;
     }
 
     /**

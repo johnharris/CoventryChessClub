@@ -80,25 +80,38 @@ DB_CONNECTION=sqlite
 # DB_USERNAME=coventrychess
 # DB_PASSWORD=your-database-password
 
-# The first administrator, created by the seeder. Change the password.
-ADMIN_NAME="Club Administrator"
-ADMIN_EMAIL=secretary@coventrychessclub.org.uk
-ADMIN_PASSWORD=choose-something-long-and-unique
+# The club's three administrators, created by the seeder.
+# GIVE EACH PERSON THEIR OWN PASSWORD. Do not leave these as they are.
+SIMON_PASSWORD=choose-something-long-and-unique
+DAVE_PASSWORD=choose-something-different
+JOHN_PASSWORD=choose-something-different-again
 
 # Where contact form enquiries are emailed. Leave blank to store them on the
 # site only; they are always stored regardless.
-CLUB_ENQUIRY_EMAIL=secretary@coventrychessclub.org.uk
+CLUB_ENQUIRY_EMAIL=secretary@coventrychessclub.co.uk
 
-# Outbound email, once your host has given you SMTP details
+# Outbound email, once your host has given you SMTP details.
+# Until these are set, MAIL_MAILER=log writes emails to storage/logs instead of
+# sending them — the site keeps working, but nobody receives anything.
 MAIL_MAILER=smtp
 MAIL_HOST=mail.yourhost.com
 MAIL_PORT=587
-MAIL_USERNAME=secretary@coventrychessclub.org.uk
+MAIL_USERNAME=secretary@coventrychessclub.co.uk
 MAIL_PASSWORD=your-mailbox-password
 MAIL_ENCRYPTION=tls
-MAIL_FROM_ADDRESS=secretary@coventrychessclub.org.uk
+MAIL_FROM_ADDRESS=secretary@coventrychessclub.co.uk
 MAIL_FROM_NAME="Coventry Chess Club"
 ```
+
+### Email is what makes the contact form useful
+
+The form does two things when somebody writes in: it sends **the enquirer an immediate acknowledgement** signed by the club secretary, and it sends **the club a copy** while also storing the enquiry on the site.
+
+Until `MAIL_*` is configured, both emails are written to `storage/logs/laravel.log` rather than sent. That is deliberate — the enquiry is never lost, and the visitor still sees a confirmation — but nobody is actually told. **Configuring SMTP should be treated as part of going live, not an optional extra.**
+
+Use a mailbox on the club's own domain, created in cPanel, and set `MAIL_FROM_ADDRESS` to that same address. Sending as a Gmail, Yahoo or Hotmail address from the club's server is the most common reason acknowledgement emails land in a stranger's spam folder, because the sending server is not one those providers authorise for that address.
+
+Once it is set up, send yourself a test enquiry through the live form and confirm the acknowledgement arrives and does not look like spam.
 
 > **`APP_DEBUG=false` is not optional.** With debugging enabled, an error page reveals file paths, configuration values and database details to any visitor.
 
@@ -152,9 +165,13 @@ touch database/database.sqlite
 chmod 664 database/database.sqlite
 
 php artisan migrate --force
-php artisan db:seed --force        # creates the first administrator and content
-php artisan storage:link
+php artisan db:seed --force        # creates the three administrators and the content
+php artisan storage:link           # REQUIRED, or photographs will not display
 ```
+
+> **`php artisan storage:link` is not optional.** Photographs uploaded by members are stored in `storage/app/public/`, deliberately outside the web root, and this command creates the `public/storage` link that lets the site serve them. Without it, every uploaded picture is a broken image — and because the upload itself succeeds, the cause is not obvious.
+>
+> If your host forbids symbolic links, copy `storage/app/public` to `public/storage` instead, and repeat that copy whenever photographs are added. Ask the host about symlinks first; most shared hosts allow them.
 
 If your host provides no terminal at all, run the migrations once from your own machine against the host's MySQL database (using its remote access credentials), or ask the host's support to run the two commands — this is a routine request.
 
@@ -172,9 +189,19 @@ These three commands are the single largest performance improvement available an
 
 In cPanel, open *SSL/TLS Status* and run **AutoSSL**, which issues a free Let's Encrypt certificate. Then add a redirect so visitors always arrive on the secure address; cPanel's *Domains* screen has a "Force HTTPS Redirect" switch.
 
-### Step 7 — Sign in and change the password
+### Step 7 — Sign in and check it over
 
-Visit `https://your-domain/login`, sign in with the `ADMIN_EMAIL` and `ADMIN_PASSWORD` from `.env`, and change the password immediately under *My profile*. Then whitelist the club's members from the *Members* screen.
+Visit `https://your-domain/login` and sign in as one of the three administrators, using the password you set in `.env`. Each officer should then change their own password under *My profile*.
+
+Before telling anybody the address, check these five things, which between them cover everything that commonly breaks on a first deployment:
+
+1. **The home page has styling and the board shows its pieces.** If the page looks like plain text, `APP_URL` is wrong or the `public/build` directory did not upload.
+2. **A photograph displays.** Upload one under *Images*. A broken image means `storage:link` has not run.
+3. **The contact form sends both emails.** Submit a test enquiry using an address you can read, and confirm the acknowledgement arrives.
+4. **A puzzle's answer stays hidden** until *Show the answer* is clicked.
+5. **HTTPS is forced**, and the address bar shows the padlock on every page.
+
+Then add the club's members from the *Members* screen. Each gets an invitation link and chooses their own password; nobody can register without being invited first.
 
 ---
 
@@ -305,23 +332,30 @@ If the change touched CSS or JavaScript, run `pnpm run build` locally and commit
 
 ## Part 6 — Backups
 
-The whole site is two things: the database and the `.env` file. On SQLite, a complete backup is a copy of one file.
+There are **three** things to back up, and it is the third that people forget.
+
+1. **The database** — every post, page, member account and enquiry.
+2. **`storage/app/public/`** — every photograph members have uploaded. These are files on disk, not database rows, so a database backup alone does not include them. Lose this directory and every picture on the site becomes a broken image, with no way back.
+3. **`.env`** — keep a copy somewhere safe and private. Without `APP_KEY`, encrypted values cannot be recovered.
 
 ```bash
-# SQLite
+# 1. Database — SQLite
 cp database/database.sqlite ~/backups/chess-$(date +%F).sqlite
 
-# MySQL
+# 1. Database — MySQL
 mysqldump -u coventrychess -p coventrychess > ~/backups/chess-$(date +%F).sql
+
+# 2. Photographs
+tar -czf ~/backups/chess-images-$(date +%F).tar.gz storage/app/public
 ```
 
-A weekly cron entry is enough for a club site:
+A weekly cron entry is enough for a club site, and should cover both:
 
 ```cron
-0 3 * * 1 cp /var/www/coventrychess/database/database.sqlite /home/backup/chess-$(date +\%F).sqlite
+0 3 * * 1 cd /var/www/coventrychess && cp database/database.sqlite /home/backup/chess-$(date +\%F).sqlite && tar -czf /home/backup/chess-images-$(date +\%F).tar.gz storage/app/public
 ```
 
-Keep a copy of `.env` somewhere safe and private — without `APP_KEY`, encrypted values cannot be recovered.
+Test a restore once, on a spare copy, before trusting any of it. An untested backup is a hope, not a backup.
 
 ---
 
@@ -336,8 +370,12 @@ Keep a copy of `.env` somewhere safe and private — without `APP_KEY`, encrypte
 | "No application encryption key" | `APP_KEY` is empty. Run `php artisan key:generate`. |
 | Routes 404 except the home page | Apache is missing `mod_rewrite`, or Nginx lacks the `try_files` line. |
 | Changes to `.env` have no effect | Configuration is cached. Run `php artisan config:cache` again. |
-| Contact form works but no email arrives | The `MAIL_*` values are wrong. Enquiries are still stored — check the Enquiries screen. |
-| Cannot sign in as administrator | The seeder did not run, or ran before `.env` was set. Re-run `php artisan db:seed --force`. |
+| Contact form works but no email arrives | Either `MAIL_MAILER` is still `log`, or the `MAIL_*` values are wrong. Enquiries are always stored regardless — check the Enquiries screen, and look in `storage/logs/laravel.log` for the emails that were written instead of sent. |
+| Acknowledgement emails go to spam | `MAIL_FROM_ADDRESS` is not on the club's own domain, or the domain lacks an SPF record. Use a mailbox on the club domain and ask the host to confirm SPF is set. |
+| Photographs upload but show as broken images | `php artisan storage:link` has not been run, or the symlink did not survive the upload. This is the single most common image problem. |
+| "Upload failed" when adding a photograph | The file exceeds PHP's `upload_max_filesize` or `post_max_size`. Raise both to at least 10M in cPanel's MultiPHP INI Editor. |
+| Puzzle answers are visible without clicking | `public/build/` is stale. Re-run `pnpm run build`, or re-upload the committed `public/build` directory. |
+| Cannot sign in as an administrator | The seeder did not run, or ran before `.env` was set. Re-run `php artisan db:seed --force`. |
 
 ---
 
@@ -345,7 +383,9 @@ Keep a copy of `.env` somewhere safe and private — without `APP_KEY`, encrypte
 
 - [ ] `APP_DEBUG=false` and `APP_ENV=production`
 - [ ] `APP_KEY` generated and unique to this installation
-- [ ] The administrator password changed from the value in `.env`
+- [ ] Each of the three administrators has their own password, changed from the value in `.env`
+- [ ] `php artisan storage:link` has been run, and an uploaded photograph displays
+- [ ] A test enquiry produces both emails, and the acknowledgement does not land in spam
 - [ ] HTTPS working, with HTTP redirecting to it
 - [ ] `.env` not readable from the web (it is outside the web root if you followed Part 3 or 4)
 - [ ] `database/database.sqlite` not readable from the web, for the same reason

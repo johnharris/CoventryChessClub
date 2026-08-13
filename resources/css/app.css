@@ -137,6 +137,76 @@ cg-board {
 }
 
 /* ---------------------------------------------------------------------------
+   Reveal-answer button (puzzle solutions)
+
+   Uses <details>/<summary> so that it still works with JavaScript disabled,
+   but styled to look like a real button rather than the small triangle and
+   line of text browsers draw by default.
+--------------------------------------------------------------------------- */
+
+.reveal-answer {
+    @apply rounded-lg bg-club-50 ring-1 ring-club-100;
+}
+
+.reveal-answer__button {
+    @apply flex cursor-pointer list-none items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold text-club-800 transition-colors select-none;
+}
+
+.reveal-answer__button:hover {
+    @apply bg-club-100 text-club-900;
+}
+
+.reveal-answer__button:focus-visible {
+    @apply outline-2 outline-offset-2 outline-club-600;
+}
+
+/* Hide the default disclosure triangle in every engine. */
+.reveal-answer__button::-webkit-details-marker {
+    display: none;
+}
+
+.reveal-answer__button::marker {
+    content: '';
+}
+
+/* Swap the wording once the answer is open. */
+.reveal-answer:not([open]) .reveal-answer__hide,
+.reveal-answer[open] .reveal-answer__show {
+    display: none;
+}
+
+.reveal-answer[open] .reveal-answer__button {
+    @apply rounded-b-none border-b border-club-100;
+}
+
+.reveal-answer[open] .reveal-answer__icon {
+    @apply opacity-60;
+}
+
+.reveal-answer__body {
+    @apply px-4 py-3 text-sm leading-relaxed text-stone-700;
+}
+
+/*
+ * When a puzzle is printed — for a junior session, say — a collapsed answer is
+ * useless, so answers always print open with the button itself removed.
+ */
+@media print {
+    .reveal-answer__body {
+        display: block !important;
+    }
+
+    .reveal-answer__button {
+        display: none !important;
+    }
+
+    .reveal-answer::before {
+        content: 'Answer:';
+        @apply block px-4 pt-3 text-xs font-bold tracking-wider uppercase;
+    }
+}
+
+/* ---------------------------------------------------------------------------
    Prose: post and page bodies
 --------------------------------------------------------------------------- */
 
@@ -204,8 +274,16 @@ cg-board {
     @apply border-b border-stone-200 px-3 py-2 align-top;
 }
 
+/* Photographs inside a post body. max-w-full stops a wide image forcing the
+   whole article to scroll sideways on a phone, and h-auto preserves the aspect
+   ratio when only a width is known. */
 .prose-club img {
-    @apply rounded-lg;
+    @apply my-6 h-auto max-w-full rounded-lg bg-stone-100 ring-1 ring-stone-200;
+}
+
+/* An image alone in its paragraph reads as a figure, so centre it. */
+.prose-club p > img:only-child {
+    @apply mx-auto block;
 }
 
 .prose-club hr {
@@ -227,11 +305,15 @@ cg-board {
     @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold tracking-wide uppercase;
 }
 
-.btn,
-.btn-primary,
-.btn-secondary,
-.btn-ghost,
-.btn-danger {
+/* The `:not(.hidden)` matters. These rules are emitted after Tailwind's
+   utilities, so `display:inline-flex` here would otherwise beat
+   `.hidden{display:none}` on equal specificity, and `hidden` would silently do
+   nothing on every button on the site. */
+.btn:not(.hidden),
+.btn-primary:not(.hidden),
+.btn-secondary:not(.hidden),
+.btn-ghost:not(.hidden),
+.btn-danger:not(.hidden) {
     @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2;
 }
 
@@ -251,7 +333,7 @@ cg-board {
     @apply bg-red-600 text-white hover:bg-red-700 focus-visible:outline-red-600;
 }
 
-.btn-icon {
+.btn-icon:not(.hidden) {
     @apply inline-flex h-9 w-9 items-center justify-center rounded-lg text-stone-500 transition-colors hover:bg-stone-100 hover:text-stone-900 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent;
 }
 

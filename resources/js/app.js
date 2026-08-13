@@ -9,6 +9,7 @@
 import { mountStaticBoards } from './chess/static-board';
 import { mountGameViewers } from './chess/game-viewer';
 import { mountPostEditor } from './chess/post-editor';
+import { initMediaUploads } from './media/uploader';
 import { mountNavigation } from './ui/navigation';
 
 const boot = () => {
@@ -16,6 +17,7 @@ const boot = () => {
     mountStaticBoards();
     mountGameViewers();
     mountPostEditor();
+    initMediaUploads();
 };
 
 if (document.readyState === 'loading') {

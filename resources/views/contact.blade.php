@@ -7,6 +7,7 @@
     @php
         $venue = config('club.venue');
         $meeting = config('club.meeting');
+        $juniorsVenue = config('club.juniors_venue');
     @endphp
 
     <div class="border-b border-stone-200 bg-white">
@@ -83,6 +84,25 @@
                             @error('enquiry_type') <p class="field-error">{{ $message }}</p> @enderror
                         </div>
 
+                        <div>
+                            <label for="playing_strength" class="field-label">
+                                Your playing strength <span class="text-stone-400">(optional)</span>
+                            </label>
+                            <select id="playing_strength" name="playing_strength" class="field-input">
+                                <option value="">Prefer not to say</option>
+                                @foreach (\App\Models\Enquiry::STRENGTHS as $value => $label)
+                                    <option value="{{ $value }}" @selected(old('playing_strength') === $value)>
+                                        {{ $label }} &mdash; {{ \App\Models\Enquiry::STRENGTH_HINTS[$value] }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <p class="field-hint">
+                                Just a rough idea, so we know who to pair you with. Everyone is
+                                welcome whatever you pick.
+                            </p>
+                            @error('playing_strength') <p class="field-error">{{ $message }}</p> @enderror
+                        </div>
+
                         <div class="sm:col-span-2">
                             <label for="subject" class="field-label">Subject <span class="text-stone-400">(optional)</span></label>
                             <input id="subject" name="subject" type="text" value="{{ old('subject') }}" class="field-input">
@@ -121,6 +141,9 @@
                         <p class="font-semibold text-stone-900">{{ $venue['name'] }}</p>
                         <p>{{ $venue['address'] }}</p>
                         <p>{{ $venue['postcode'] }}</p>
+                        @if (! empty($venue['entrance']))
+                            <p class="font-medium">{{ $venue['entrance'] }}</p>
+                        @endif
                     </address>
                     @if ($venue['map_url'])
                         <a href="{{ $venue['map_url'] }}" target="_blank" rel="noopener"
@@ -133,10 +156,47 @@
                 <div class="rounded-xl bg-club-50 p-6 ring-1 ring-club-100">
                     <h2 class="text-sm font-semibold tracking-wider text-club-800 uppercase">Junior section</h2>
                     <p class="mt-3 text-sm leading-relaxed text-stone-700">
-                        Our junior section runs {{ $meeting['juniors'] }}. Places are limited, so please
-                        get in touch before bringing a young player along for the first time.
+                        Our junior section runs every {{ $meeting['juniors'] }} at a separate venue:
                     </p>
+                    <address class="mt-3 space-y-1 text-sm text-stone-700 not-italic">
+                        <p class="font-semibold text-stone-900">{{ $juniorsVenue['name'] }}</p>
+                        <p>{{ $juniorsVenue['address'] }}</p>
+                    </address>
+                    <p class="mt-3 text-sm leading-relaxed text-stone-700">
+                        @if (! empty($juniorsVenue['fee']))
+                            Sessions are {{ $juniorsVenue['fee'] }}.
+                        @endif
+                        Places fill up very quickly and must be pre-booked, so please check with us
+                        before attending.
+                    </p>
+                    @if ($juniorsVenue['map_url'])
+                        <a href="{{ $juniorsVenue['map_url'] }}" target="_blank" rel="noopener"
+                           class="mt-4 inline-block text-sm font-semibold text-club-700 hover:text-club-900">
+                            Open in maps &rarr;
+                        </a>
+                    @endif
                 </div>
+
+                @if ($officers = config('club.officers'))
+                    <div class="card p-6">
+                        <h2 class="text-sm font-semibold tracking-wider text-stone-500 uppercase">Prefer to telephone?</h2>
+                        <p class="mt-3 text-sm leading-relaxed text-stone-700">
+                            You are welcome to ring either of us directly.
+                        </p>
+                        <ul class="mt-4 space-y-3 text-sm">
+                            @foreach ($officers as $officer)
+                                <li>
+                                    <p class="font-semibold text-stone-900">{{ $officer['name'] }}</p>
+                                    <p class="text-stone-600">{{ $officer['role'] }}</p>
+                                    <a href="tel:{{ preg_replace('/\s+/', '', $officer['phone']) }}"
+                                       class="font-medium text-club-700 hover:text-club-900">
+                                        {{ $officer['phone'] }}
+                                    </a>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
 
                 <div class="card p-6">
                     <h2 class="text-sm font-semibold tracking-wider text-stone-500 uppercase">Club members</h2>

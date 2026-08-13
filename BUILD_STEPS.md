@@ -271,7 +271,7 @@ composer require pestphp/pest pestphp/pest-plugin-laravel --dev
 php artisan test
 ```
 
-Thirty-nine tests make 106 assertions across six areas:
+Ninety-six tests make 306 assertions across ten areas:
 
 | Area | What is proved |
 |---|---|
@@ -282,14 +282,77 @@ Thirty-nine tests make 106 assertions across six areas:
 | Authoring | All three post types save; invalid FENs and PGNs are rejected; members cannot edit others' posts; administrators can; slugs stay unique |
 | Contact form | Enquiries are stored; validation, the honeypot and the rate limit all work; administrators can read and archive |
 | Chess helpers | FEN validation and its error messages, side to move, FEN normalisation, PGN header and annotation extraction, PGN date conversion |
-
-The tests found two genuine bugs during development, both fixed: the post editor crashed on the create screen because the form read properties of a not-yet-existing post, and the PGN header fallbacks failed when optional form fields were omitted entirely.
+| Permissions in detail | Every combination of member and administrator against every post action; that an administrator editing a post does not become its author; that a member cannot read another member's draft |
+| Images | Uploads succeed and are resized; non-images and oversized files are refused; guests cannot upload; the Markdown written into a post body is root-relative |
+| Puzzle answers | The answer is present in the page but inside the collapsed element, never printed openly |
+| Contact acknowledgement | Both emails are dispatched, addressed correctly, and a failure of either does not lose the enquiry |
 
 ---
 
-## Part 13 — Verifying the appearance
+## Part 13 — Photographs
 
-Every screen was captured at desktop (1440 px) and mobile (390 px) widths with a Playwright script, and reviewed individually. That review found and fixed a cramped move list, a stray separator character on the game page, and a sticky action bar in the post editor that overlapped the form on long pages.
+Members can upload photographs from the post editor — by file, by dragging onto the text box, or by pasting — and from a standalone image library.
+
+Each upload is processed by `App\Support\ImageProcessor` using PHP's GD extension, which is available on essentially every host. Three versions are produced: a full-size version capped at 2400 px, a display version at 1200 px, and a thumbnail at 400 px. This matters more than it sounds: a photograph straight from a modern phone is often 4000 px wide and several megabytes, and serving that to a reader on mobile data would make the site feel broken.
+
+Two decisions are worth recording:
+
+**Metadata is stripped.** Phone photographs commonly carry GPS coordinates. Publishing those alongside a junior chess session would be careless, so every image is re-encoded rather than copied, which discards EXIF data as a side effect. Re-encoding also means a file that is secretly something else — an image with executable content appended — cannot survive the process.
+
+**Orientation is corrected before stripping.** Phones often store a photograph rotated with an EXIF flag saying "display this the other way up". Strip the metadata first and the picture appears sideways, so the rotation is applied to the pixels first.
+
+Uploaded files live in `storage/app/public/`, outside the web root, served through the `public/storage` symlink created by `php artisan storage:link`. Posts reference them with root-relative Markdown such as `![The A team](/storage/images/2026/08/...)`.
+
+> **A bug caught before delivery.** The first version wrote *absolute* URLs into post bodies. Every photograph would have worked perfectly — until the club moved from the preview address to `coventrychessclub.co.uk`, at which point every image in every post would have broken, with the old address baked into the text of each one. Root-relative paths survive the move. A test now asserts the inserted Markdown never contains `http`.
+
+---
+
+## Part 14 — Hiding puzzle answers
+
+Position posts always had a solution field, but it was printed straight onto the page, which defeats the purpose of setting a puzzle. The answer now sits behind a *Show the answer* button.
+
+It is built on the HTML `<details>` and `<summary>` elements rather than a JavaScript panel, for one reason: it works when JavaScript does not. A reader on a locked-down work computer or an ageing phone still gets a working button. CSS turns what browsers draw as a small triangle into something that plainly looks like a button, and swaps the wording to *Hide the answer* when open.
+
+The same component is used for answers attached to diagrams dropped mid-article, so the behaviour is consistent wherever a puzzle appears.
+
+---
+
+## Part 15 — The contact form's automatic reply
+
+An enquiry now produces two emails: an acknowledgement to the enquirer, signed by the club secretary, and a notification to the club. The enquiry is stored either way.
+
+The acknowledgement's content is driven entirely by `config/club.php` — meeting time, venue, junior details and charge, officers' names and telephone numbers, the Facebook group, whether to mention the 4NCL team, and who signs it. Nothing is hard-coded into the template, so the club can change what newcomers are told without a developer.
+
+Each send is wrapped individually in `EnquiryController::trySend()`. If the mail server is misconfigured or unreachable, the failure is logged, the visitor still sees a confirmation, and the enquiry is still saved. Losing a prospective member's message because of an SMTP problem would be the worst possible failure for this form, so it cannot happen.
+
+The form also collects an optional playing strength — beginner, intermediate, advanced, or prefer not to say — shown in the admin inbox and in the notification email, so whoever greets a newcomer knows roughly who to pair them with.
+
+---
+
+## Part 16 — Verifying the appearance
+
+Every screen was captured at desktop (1440 px) and mobile (390 px) widths with a Playwright script, and reviewed individually.
+
+The boards are initialised lazily, and a full-page capture of a tall page stitches strips together, so a board could be caught mid-initialisation and photographed as an empty placeholder. The script therefore scrolls the whole page first and waits until every board reports itself finished. Each image is then checked programmatically by counting board and piece pixels, rather than trusting a visual glance.
+
+### Bugs this process caught
+
+Six defects were found and fixed by reviewing the output rather than the code:
+
+| Defect | Why it mattered |
+|---|---|
+| Cramped move list, stray separator, sticky action bar overlapping the form | Cosmetic, but on the screens members use most |
+| The bundled board theme was **not** lichess's colour — its dark squares composite to `#c0ad90` rather than `#b58863` | The whole point was that the boards look like lichess. Confirmed by sampling rendered pixels, not by eye |
+| Check was highlighted on the **wrong king** — always White's | Chessground infers the checked side from whose turn it is, and defaults to White unless told. Every check in every game marked the white king. Reported by the club, which is exactly why real use matters |
+| Static diagrams never highlighted check at all | The mirror image of the same bug: highlighting enabled, no value passed. Silent rather than wrong |
+| A *Remove* button and caption box appeared on a blank photograph form | Buttons that cannot do anything make people distrust the rest of the form |
+| **`hidden` did not work on any button anywhere on the site** | The most instructive of the six. See below |
+
+### The lesson from the last one
+
+The custom `.btn-*` classes set `display: inline-flex`. Tailwind emits those rules *after* its own utilities, so on equal specificity `display: inline-flex` beat `.hidden { display: none }`. Every button on the site carrying `hidden` stayed visible.
+
+What makes it worth recording is how it hid from testing. A browser check asserted that the class was being added and removed correctly — and it was, perfectly. The element was visible the entire time. **A test that checks a class name instead of the effect can pass while the user still sees the bug.** The verification was rewritten to read `getComputedStyle().display`, and the fix (`.btn-secondary:not(.hidden)`) restores the utility's authority sitewide rather than patching the one card where it was noticed.
 
 ---
 
@@ -310,8 +373,9 @@ composer require pestphp/pest pestphp/pest-plugin-laravel --dev
 pnpm install
 pnpm add chessground chess.js
 
-# Database
+# Database and uploaded files
 php artisan migrate:fresh --seed
+php artisan storage:link
 
 # Build and run
 pnpm run build
@@ -332,3 +396,5 @@ php artisan test
 [5] [league/commonmark](https://commonmark.thephpleague.com/) — Markdown parser used for post bodies.
 [6] [Pest](https://pestphp.com/docs) — the testing framework used for the suite.
 [7] [Coventry Chess Club (existing site)](https://coventrychessclub.blogspot.com) — source of the migrated pages and posts.
+[8] [MDN: `<details>` element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details) — the basis of the reveal-answer control, chosen because it needs no JavaScript.
+[9] [PHP GD](https://www.php.net/manual/en/book.image.php) — image resizing and re-encoding, used in preference to Imagick because GD is available on far more shared hosts.

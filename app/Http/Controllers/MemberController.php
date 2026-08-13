@@ -24,7 +24,7 @@ class MemberController extends Controller
         return view('members.dashboard', [
             'myPosts' => Post::where('user_id', $user->id)->count(),
             'myDrafts' => Post::where('user_id', $user->id)->where('is_published', false)->count(),
-            'recent' => Post::with('user')
+            'recent' => Post::with(['user', 'featuredImage'])
                 ->when(! $user->isAdmin(), fn ($q) => $q->where('user_id', $user->id))
                 ->orderByDesc('updated_at')
                 ->limit(5)

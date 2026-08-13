@@ -50,6 +50,9 @@
                                 @endunless
                                 <p class="font-semibold text-stone-900">{{ $enquiry->name }}</p>
                                 <span class="badge bg-stone-200 text-stone-700">{{ $enquiry->typeLabel() }}</span>
+                                @if ($enquiry->strengthLabel())
+                                    <span class="badge bg-club-100 text-club-800">{{ $enquiry->strengthLabel() }}</span>
+                                @endif
                             </div>
                             <p class="mt-1 text-sm text-stone-600">
                                 {{ $enquiry->subject ?: Str::limit($enquiry->message, 90) }}

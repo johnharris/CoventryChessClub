@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\EnquiryAcknowledgement;
 use App\Mail\EnquiryReceived;
 use App\Models\Enquiry;
 use Illuminate\Http\RedirectResponse;
@@ -41,6 +42,9 @@ class EnquiryController extends Controller
             'phone' => ['nullable', 'string', 'max:40'],
             'subject' => ['nullable', 'string', 'max:180'],
             'enquiry_type' => ['required', Rule::in(array_keys(Enquiry::TYPES))],
+            // Optional: a newcomer should not be forced to rate themselves
+            // before they are allowed to say hello.
+            'playing_strength' => ['nullable', Rule::in(array_keys(Enquiry::STRENGTHS))],
             'message' => ['required', 'string', 'min:10', 'max:4000'],
             // Honeypot: a hidden field real people never fill in.
             'website' => ['prohibited'],
@@ -55,18 +59,44 @@ class EnquiryController extends Controller
             'ip_address' => $request->ip(),
         ]);
 
-        // Email the club as well, if outbound mail has been configured.
+        // Notify the club, if a notification address has been configured.
         if ($to = config('club.enquiry_email')) {
-            try {
-                Mail::to($to)->send(new EnquiryReceived($enquiry));
-            } catch (\Throwable $e) {
-                // The enquiry is safely stored either way, so never fail the request.
-                Log::warning('Enquiry notification could not be sent: '.$e->getMessage());
-            }
+            $this->trySend(
+                fn () => Mail::to($to)->send(new EnquiryReceived($enquiry)),
+                'Enquiry notification to the club'
+            );
+        }
+
+        // Acknowledge the enquirer with the club's standard welcome letter. Sent
+        // independently of the notification above so that a failure of one does
+        // not prevent the other.
+        if (config('club.auto_reply.enabled')) {
+            $this->trySend(
+                fn () => Mail::to($enquiry->email, $enquiry->name)
+                    ->send(new EnquiryAcknowledgement($enquiry)),
+                'Automatic acknowledgement to '.$enquiry->email
+            );
         }
 
         return redirect()->route('contact')
             ->with('status', 'Thank you — your message has reached the club and we will be in touch soon.');
+    }
+
+    /**
+     * Sends an email without ever letting a mail failure break the request.
+     *
+     * The enquiry is already stored in the site inbox by this point, so a
+     * misconfigured mail server must not cost the club the message or show the
+     * enquirer an error page. Failures are logged for whoever administers the
+     * hosting to pick up.
+     */
+    private function trySend(callable $send, string $description): void
+    {
+        try {
+            $send();
+        } catch (\Throwable $e) {
+            Log::warning($description.' could not be sent: '.$e->getMessage());
+        }
     }
 
     /* =====================================================================

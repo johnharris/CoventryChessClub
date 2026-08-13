@@ -16,7 +16,7 @@
                 </div>
                 <p class="mt-3 max-w-md text-sm leading-relaxed text-club-300">
                     {{ config('club.tagline') }}. We play in the Coventry &amp; District League
-                    and the Leamington &amp; District League, and run a junior section on club nights.
+                    and the Leamington &amp; District League, and run a separate junior section.
                 </p>
                 <a href="{{ route('contact') }}" class="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-white hover:text-club-200">
                     Get in touch
@@ -33,6 +33,9 @@
                     <p>{{ $venue['name'] }}</p>
                     <p>{{ $venue['address'] }}</p>
                     <p>{{ $venue['postcode'] }}</p>
+                        @if (! empty($venue['entrance']))
+                            <p class="font-medium">{{ $venue['entrance'] }}</p>
+                        @endif
                 </address>
                 @if ($venue['map_url'])
                     <a href="{{ $venue['map_url'] }}" target="_blank" rel="noopener" class="mt-3 inline-block text-sm font-medium text-club-200 underline decoration-club-600 underline-offset-2 hover:text-white">

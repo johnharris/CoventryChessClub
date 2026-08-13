@@ -57,6 +57,25 @@
             </div>
         </header>
 
+        {{-- ---------- Lead photograph ---------- --}}
+        @if ($post->hasFeaturedImage())
+            <figure class="mt-8">
+                <a href="{{ $post->featuredImage->originalUrl() }}" target="_blank" rel="noopener"
+                   title="Open the full-size photograph">
+                    <img src="{{ $post->featuredImage->url() }}"
+                         alt="{{ $post->featuredImage->alt_text ?: $post->title }}"
+                         width="{{ $post->featuredImage->width }}"
+                         height="{{ $post->featuredImage->height }}"
+                         class="w-full rounded-xl bg-stone-100 ring-1 ring-stone-200">
+                </a>
+                @if ($post->featured_image_caption)
+                    <figcaption class="mt-2.5 text-sm text-stone-500">
+                        {{ $post->featured_image_caption }}
+                    </figcaption>
+                @endif
+            </figure>
+        @endif
+
         {{-- ---------- Chess: a single position ---------- --}}
         @if ($post->type === \App\Models\Post::TYPE_POSITION && $post->fen)
             <section class="mt-8" aria-label="Chess position">
@@ -78,14 +97,7 @@
                             <p class="mt-2 leading-relaxed text-stone-700">{{ $post->caption }}</p>
                         @endif
 
-                        @if ($post->solution)
-                            <details class="mt-4 rounded-lg bg-club-50 p-3.5 ring-1 ring-club-100">
-                                <summary class="cursor-pointer text-sm font-semibold text-club-800 hover:text-club-900">
-                                    Show the answer
-                                </summary>
-                                <p class="mt-2 text-sm leading-relaxed text-stone-700">{{ $post->solution }}</p>
-                            </details>
-                        @endif
+                        <x-reveal-answer :solution="$post->solution" />
 
                         <div class="mt-4 border-t border-stone-200 pt-3.5">
                             <label for="post-fen" class="mb-1.5 block text-xs font-semibold tracking-wider text-stone-500 uppercase">

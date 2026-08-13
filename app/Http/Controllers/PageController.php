@@ -19,16 +19,16 @@ class PageController extends Controller
      */
     public function home(): View
     {
-        $featured = Post::with('user')->published()->where('is_featured', true)
+        $featured = Post::with(['user', 'featuredImage'])->published()->where('is_featured', true)
             ->newestFirst()->first()
-            ?? Post::with('user')->published()->newestFirst()->first();
+            ?? Post::with(['user', 'featuredImage'])->published()->newestFirst()->first();
 
         return view('home', [
             'featured' => $featured,
-            'latest' => Post::with('user')->published()
+            'latest' => Post::with(['user', 'featuredImage'])->published()
                 ->when($featured, fn ($q) => $q->whereKeyNot($featured->id))
                 ->newestFirst()->limit(4)->get(),
-            'chessPosts' => Post::with('user')->published()
+            'chessPosts' => Post::with(['user', 'featuredImage'])->published()
                 ->whereIn('type', [Post::TYPE_POSITION, Post::TYPE_GAME])
                 ->when($featured, fn ($q) => $q->whereKeyNot($featured->id))
                 ->newestFirst()->limit(3)->get(),

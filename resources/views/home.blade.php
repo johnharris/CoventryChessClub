@@ -4,6 +4,7 @@
     @php
         $meeting = config('club.meeting');
         $venue = config('club.venue');
+        $juniorsVenue = config('club.juniors_venue');
     @endphp
 
     {{-- ================= Hero ================= --}}
@@ -195,8 +196,10 @@
                 </div>
                 <h2 class="mt-4 text-lg font-semibold text-stone-900">Junior section</h2>
                 <p class="mt-2 text-sm leading-relaxed text-stone-600">
-                    Our junior section runs on club nights ({{ $meeting['juniors'] }}), coaching young
-                    players from the basic moves through to their first competitive games.
+                    Our junior section runs every {{ $meeting['juniors'] }} at {{ $juniorsVenue['name'] }},
+                    {{ $juniorsVenue['address'] }} — a separate venue from the main club night. Places fill
+                    up very quickly and must be booked in advance, so please check with us before
+                    attending.@if (! empty($juniorsVenue['fee'])) Sessions are {{ $juniorsVenue['fee'] }}.@endif
                 </p>
                 <a href="{{ route('contact') }}" class="mt-4 inline-block text-sm font-semibold text-club-700 hover:text-club-900">
                     Enquire about juniors
@@ -220,6 +223,9 @@
                         <p class="font-semibold text-stone-900">{{ $venue['name'] }}</p>
                         <p>{{ $venue['address'] }}</p>
                         <p>{{ $venue['postcode'] }}</p>
+                        @if (! empty($venue['entrance']))
+                            <p class="font-medium">{{ $venue['entrance'] }}</p>
+                        @endif
                     </address>
 
                     <div class="mt-6 flex flex-wrap gap-3">
@@ -233,10 +239,6 @@
                 <div class="rounded-2xl bg-club-50 p-6 ring-1 ring-club-100 sm:p-8">
                     <h3 class="text-sm font-semibold tracking-wider text-club-800 uppercase">A typical club night</h3>
                     <ul class="mt-4 space-y-3.5 text-sm text-stone-700">
-                        <li class="flex gap-3">
-                            <span class="mt-0.5 font-mono text-xs font-semibold text-club-600">6:00pm</span>
-                            <span>Junior section: coaching and graded games for young players.</span>
-                        </li>
                         <li class="flex gap-3">
                             <span class="mt-0.5 font-mono text-xs font-semibold text-club-600">7:30pm</span>
                             <span>Club opens for the evening. League matches begin, and anyone not playing a fixture gets a friendly game.</span>

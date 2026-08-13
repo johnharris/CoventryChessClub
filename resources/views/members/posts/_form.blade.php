@@ -223,6 +223,63 @@
     </div>
 </div>
 
+{{-- ---------- Lead photograph ---------- --}}
+<div class="card mt-5 p-5 sm:p-6" data-featured-image>
+    <h2 class="text-sm font-semibold text-stone-900">Lead photograph <span class="font-normal text-stone-400">(optional)</span></h2>
+    <p class="mt-1.5 text-sm text-stone-600">
+        Shown across the top of the post and used as its picture on the blog page.
+    </p>
+
+    @php
+        $featured = old('featured_image_id')
+            ? \App\Models\Media::find(old('featured_image_id'))
+            : $post?->featuredImage;
+    @endphp
+
+    <input type="hidden" name="featured_image_id" value="{{ old('featured_image_id', $post?->featured_image_id) }}"
+           data-featured-input>
+
+    <div class="mt-4 flex flex-wrap items-start gap-4">
+        <div class="relative h-28 w-44 shrink-0 overflow-hidden rounded-lg bg-stone-100 ring-1 ring-stone-200"
+             data-featured-preview>
+            @if ($featured)
+                <img src="{{ $featured->thumbUrl() }}" alt="{{ $featured->alt_text }}"
+                     class="h-full w-full object-cover">
+            @else
+                <div class="flex h-full w-full items-center justify-center text-xs text-stone-400">
+                    No photograph
+                </div>
+            @endif
+        </div>
+
+        <div class="flex-1 space-y-3">
+            <div class="flex flex-wrap gap-2">
+                <label class="btn-secondary cursor-pointer text-sm">
+                    <span data-featured-label>{{ $featured ? 'Replace photograph' : 'Choose a photograph' }}</span>
+                    <input type="file" accept="image/jpeg,image/png,image/webp,image/gif"
+                           class="hidden" data-featured-file>
+                </label>
+                <button type="button" class="btn-secondary text-sm @unless ($featured) hidden @endunless"
+                        data-featured-remove>Remove</button>
+            </div>
+
+            {{-- Hidden until there is actually a photograph: a Remove button with
+                 nothing to remove, and a caption box with nothing to caption, only
+                 make a blank form look broken. --}}
+            <div @unless ($featured) class="hidden" @endunless data-featured-caption>
+                <label for="featured_image_caption" class="field-label">Caption for the photograph</label>
+                <input type="text" id="featured_image_caption" name="featured_image_caption" maxlength="255"
+                       value="{{ old('featured_image_caption', $post?->featured_image_caption) }}"
+                       class="field-input" placeholder="e.g. The A team after the final round">
+                @error('featured_image_caption') <p class="field-error">{{ $message }}</p> @enderror
+            </div>
+
+            <p class="text-xs text-stone-500" data-featured-status aria-live="polite"></p>
+        </div>
+    </div>
+    @error('featured_image_id') <p class="field-error">{{ $message }}</p> @enderror
+</div>
+
 {{-- ---------- Body ---------- --}}
 <div class="card mt-5 p-5 sm:p-6">
     <label for="body" class="field-label">
@@ -231,7 +288,25 @@
             <span class="text-stone-400">(optional)</span>
         @endif
     </label>
-    <textarea id="body" name="body" rows="16" class="field-input font-mono text-sm">{{ old('body', $post?->body ?? '') }}</textarea>
+
+    {{-- Image toolbar. Uploads happen without leaving the page, so nothing
+         already typed is lost. --}}
+    <div class="mb-2 flex flex-wrap items-center gap-2" data-body-images>
+        <label class="btn-secondary cursor-pointer text-sm">
+            <span data-insert-label>Add a photograph</span>
+            <input type="file" multiple accept="image/jpeg,image/png,image/webp,image/gif"
+                   class="hidden" data-insert-file>
+        </label>
+        <a href="{{ route('members.media.index') }}" target="_blank" rel="noopener"
+           class="text-sm font-medium text-club-700 hover:text-club-900">Image library &rarr;</a>
+        <span class="text-xs text-stone-500" data-insert-status aria-live="polite"></span>
+    </div>
+
+    <textarea id="body" name="body" rows="16" class="field-input font-mono text-sm"
+              data-body-input data-drop-target>{{ old('body', $post?->body ?? '') }}</textarea>
+    <p class="mt-1.5 text-xs text-stone-500">
+        You can also drag a photograph straight onto the box above.
+    </p>
 
     <div class="mt-2.5 rounded-lg bg-stone-50 p-3.5 text-sm text-stone-600 ring-1 ring-stone-200">
         <p class="font-medium text-stone-800">Formatting</p>
@@ -241,6 +316,11 @@
             <code class="rounded bg-white px-1.5 py-0.5 font-mono text-xs">*italic*</code>,
             <code class="rounded bg-white px-1.5 py-0.5 font-mono text-xs">- lists</code>,
             <code class="rounded bg-white px-1.5 py-0.5 font-mono text-xs">[link](https://…)</code>, and tables.
+        </p>
+        <p class="mt-2">
+            Photographs are inserted as
+            <code class="rounded bg-white px-1.5 py-0.5 font-mono text-xs">![description](address)</code>.
+            The description is read aloud to visitors using a screen reader, so it is worth writing.
         </p>
         <p class="mt-2">
             To drop a board into the text, use a fenced block starting with

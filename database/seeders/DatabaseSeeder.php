@@ -9,79 +9,95 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
 /**
- * Sets the site up ready to use: an administrator account, an example member, the
- * club's standing pages and the blog content.
+ * Sets the site up ready to use: the club's three administrators, an example
+ * member, the standing pages and the blog content.
  *
- * The first administrator has to be created by a seeder rather than through the
- * site, because registration is gated on the whitelist and only administrators
- * can add to the whitelist.
+ * The first administrators have to be created by a seeder rather than through
+ * the site, because registration is gated on the whitelist and only an
+ * administrator can add to the whitelist. Everybody after these three is
+ * invited from the Members screen in the normal way.
  *
- * Credentials come from the environment so that production installs do not use
- * the documented development password:
- *
- *   ADMIN_NAME, ADMIN_EMAIL, ADMIN_PASSWORD
+ * Every password comes from the environment, so a production install can be
+ * given real passwords rather than the documented development one. See
+ * .env.example and DEPLOYMENT.md.
  */
 class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;
 
+    /**
+     * The club's officers and administrators.
+     *
+     * Held as data rather than repeated code so that adding or removing an
+     * administrator is a one-line change, and so the whitelist entry can never
+     * drift out of step with the account.
+     */
+    private function administrators(): array
+    {
+        return [
+            [
+                'env' => 'SIMON',
+                'name' => 'Simon Weaver',
+                'email' => 'simonw21@yahoo.com',
+                'bio' => 'Club secretary. Handles new enquiries, the fixtures and the season dates.',
+                'notes' => 'Club secretary. Founding administrator.',
+            ],
+            [
+                'env' => 'DAVE',
+                'name' => 'Dave Filer',
+                'email' => 'david_filer@hotmail.com',
+                'bio' => 'Club chairman.',
+                'notes' => 'Club chairman. Founding administrator.',
+            ],
+            [
+                'env' => 'JOHN',
+                'name' => 'John Harris',
+                'email' => 'johnrharris174@fastmail.com',
+                'bio' => 'Club administrator. Looks after the website.',
+                'notes' => 'Club administrator. Runs the website.',
+            ],
+        ];
+    }
+
     public function run(): void
     {
-        $adminEmail = env('ADMIN_EMAIL', 'admin@coventrychessclub.test');
+        $admins = [];
 
-        $admin = User::updateOrCreate(
-            ['email' => $adminEmail],
-            [
-                'name' => env('ADMIN_NAME', 'Club Administrator'),
-                'display_name' => env('ADMIN_DISPLAY_NAME', 'Simon Weaver'),
-                'password' => Hash::make(env('ADMIN_PASSWORD', 'password')),
-                'role' => User::ROLE_ADMIN,
-                'is_active' => true,
-                'email_verified_at' => now(),
-                'bio' => 'Club secretary. Posts the fixtures, the season dates and anything else that needs announcing.',
-            ]
-        );
+        foreach ($this->administrators() as $person) {
+            $email = env($person['env'].'_EMAIL', $person['email']);
 
-        // Whitelist the administrator too, so the members screen shows a complete picture.
-        WhitelistEntry::updateOrCreate(
-            ['email' => $admin->email],
-            [
-                'name' => $admin->name,
-                'role' => User::ROLE_ADMIN,
-                'notes' => 'Founding administrator, created by the installer.',
-                'claimed_at' => now(),
-                'claimed_by_user_id' => $admin->id,
-                'invite_token' => null,
-            ]
-        );
+            $user = User::updateOrCreate(
+                ['email' => $email],
+                [
+                    'name' => env($person['env'].'_NAME', $person['name']),
+                    'display_name' => env($person['env'].'_NAME', $person['name']),
+                    'password' => Hash::make(env($person['env'].'_PASSWORD', 'password')),
+                    'role' => User::ROLE_ADMIN,
+                    'is_active' => true,
+                    'email_verified_at' => now(),
+                    'bio' => $person['bio'],
+                ]
+            );
 
-        // John Harris, club administrator.
-        $johnEmail = env('JOHN_EMAIL', 'johnrharris174@fastmail.com');
+            // Whitelisted as well, so the Members screen shows a complete picture
+            // rather than accounts that appear to have arrived from nowhere.
+            WhitelistEntry::updateOrCreate(
+                ['email' => $user->email],
+                [
+                    'name' => $user->name,
+                    'role' => User::ROLE_ADMIN,
+                    'notes' => $person['notes'],
+                    'claimed_at' => now(),
+                    'claimed_by_user_id' => $user->id,
+                    'invite_token' => null,
+                ]
+            );
 
-        $john = User::updateOrCreate(
-            ['email' => $johnEmail],
-            [
-                'name' => 'John Harris',
-                'display_name' => 'John Harris',
-                'password' => Hash::make(env('JOHN_PASSWORD', 'password')),
-                'role' => User::ROLE_ADMIN,
-                'is_active' => true,
-                'email_verified_at' => now(),
-                'bio' => 'Club administrator. Looks after the website and the club\'s online presence.',
-            ]
-        );
+            $admins[$person['env']] = $user;
+        }
 
-        WhitelistEntry::updateOrCreate(
-            ['email' => $john->email],
-            [
-                'name' => $john->name,
-                'role' => User::ROLE_ADMIN,
-                'notes' => 'Club administrator. Runs the website.',
-                'claimed_at' => now(),
-                'claimed_by_user_id' => $john->id,
-                'invite_token' => null,
-            ]
-        );
+        // Simon, as club secretary, is treated as the inviter of everybody else.
+        $inviter = $admins['SIMON'];
 
         // An example club member, to show the difference between the two roles.
         $memberEmail = env('MEMBER_EMAIL', 'member@coventrychessclub.test');
@@ -105,7 +121,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => $member->name,
                 'role' => User::ROLE_MEMBER,
-                'invited_by_user_id' => $admin->id,
+                'invited_by_user_id' => $inviter->id,
                 'notes' => 'A team, board one. Runs the coaching.',
                 'claimed_at' => now(),
                 'claimed_by_user_id' => $member->id,
@@ -113,13 +129,13 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // An unclaimed invitation, so the whitelist screen demonstrates the invite flow.
+        // An unclaimed invitation, so the Members screen demonstrates the invite flow.
         WhitelistEntry::firstOrCreate(
             ['email' => 'newmember@example.com'],
             [
                 'name' => 'A New Member',
                 'role' => User::ROLE_MEMBER,
-                'invited_by_user_id' => $admin->id,
+                'invited_by_user_id' => $inviter->id,
                 'notes' => 'Joined on a club night; invitation not yet used.',
                 'invite_token' => WhitelistEntry::freshToken(),
             ]

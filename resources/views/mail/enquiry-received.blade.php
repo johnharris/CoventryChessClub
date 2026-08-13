@@ -6,6 +6,9 @@
 - **Type:** {{ $enquiry->typeLabel() }}
 - **Email:** {{ $enquiry->email }}
 - **Telephone:** {{ $enquiry->phone ?: 'Not given' }}
+@if ($enquiry->strengthLabel())
+- **Playing strength:** {{ $enquiry->strengthLabel() }} ({{ $enquiry->strengthHint() }})
+@endif
 @if ($enquiry->subject)
 - **Subject:** {{ $enquiry->subject }}
 @endif

@@ -23,7 +23,13 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectGuestsTo(fn () => route('login'));
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        // Ordinary form posts get the friendly "back to the form with errors"
+        // behaviour, while anything asking for JSON — the image uploader in the
+        // post editor, for one — gets a JSON error it can actually read and show
+        // to the member. Without the expectsJson() clause, a failed upload
+        // redirects to the home page and the editor can only offer a vague
+        // "something went wrong".
         $exceptions->shouldRenderJsonWhen(
-            fn (Request $request) => $request->is('api/*'),
+            fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
     })->create();

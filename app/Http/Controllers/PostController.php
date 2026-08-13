@@ -27,7 +27,7 @@ class PostController extends Controller
         $type = array_key_exists((string) $type, Post::TYPES) ? $type : null;
 
         $posts = Post::query()
-            ->with('user')
+            ->with(['user', 'featuredImage'])
             ->published()
             ->ofType($type)
             ->search($request->query('q'))
@@ -84,7 +84,7 @@ class PostController extends Controller
         $user = $request->user();
 
         $posts = Post::query()
-            ->with('user')
+            ->with(['user', 'featuredImage'])
             ->when(! $user->isAdmin(), fn ($q) => $q->where('user_id', $user->id))
             ->search($request->query('q'))
             ->orderByDesc('updated_at')
@@ -172,6 +172,10 @@ class PostController extends Controller
             'body' => ['nullable', 'string', 'max:65000'],
             'published_at' => ['nullable', 'date'],
             'orientation' => ['nullable', Rule::in(['white', 'black'])],
+            // exists rather than a blind integer: a member must not be able to
+            // attach an image id that was never uploaded.
+            'featured_image_id' => ['nullable', 'integer', 'exists:media,id'],
+            'featured_image_caption' => ['nullable', 'string', 'max:255'],
         ];
 
         if ($type === Post::TYPE_POSITION) {

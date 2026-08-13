@@ -12,6 +12,9 @@
                 <x-members-tab :href="route('members.posts.index')" :active="request()->routeIs('members.posts.*')">
                     {{ $user->isAdmin() ? 'All posts' : 'My posts' }}
                 </x-members-tab>
+                <x-members-tab :href="route('members.media.index')" :active="request()->routeIs('members.media.*')">
+                    Images
+                </x-members-tab>
 
                 @if ($user->isAdmin())
                     <x-members-tab :href="route('members.enquiries.index')" :active="request()->routeIs('members.enquiries.*')">

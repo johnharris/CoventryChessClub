@@ -380,6 +380,76 @@ it('validates the contact form', function () {
         ->assertSessionHasErrors(['name', 'email', 'enquiry_type', 'message']);
 });
 
+it('records a self-assessed playing strength', function () {
+    $this->post('/contact', [
+        'name' => 'Improving Player',
+        'email' => 'strength@example.com',
+        'enquiry_type' => 'join',
+        'playing_strength' => 'intermediate',
+        'message' => 'I have played a bit and would like a game.',
+    ])->assertRedirect();
+
+    $enquiry = Enquiry::where('email', 'strength@example.com')->first();
+
+    expect($enquiry->playing_strength)->toBe('intermediate')
+        ->and($enquiry->strengthLabel())->toBe('Intermediate')
+        ->and($enquiry->strengthHint())->not->toBeNull();
+});
+
+it('accepts an enquiry with no playing strength given', function () {
+    $this->post('/contact', [
+        'name' => 'Private Person',
+        'email' => 'quiet@example.com',
+        'enquiry_type' => 'general',
+        'playing_strength' => '',
+        'message' => 'Just asking about opening times please.',
+    ])->assertRedirect()->assertSessionHasNoErrors();
+
+    $enquiry = Enquiry::where('email', 'quiet@example.com')->first();
+
+    expect($enquiry)->not->toBeNull()
+        ->and($enquiry->playing_strength)->toBeNull()
+        ->and($enquiry->strengthLabel())->toBeNull();
+});
+
+it('rejects a playing strength that is not one of the three options', function () {
+    $this->post('/contact', [
+        'name' => 'Grandmaster Pretender',
+        'email' => 'gm@example.com',
+        'enquiry_type' => 'join',
+        'playing_strength' => 'grandmaster',
+        'message' => 'I am obviously very good indeed.',
+    ])->assertSessionHasErrors('playing_strength');
+
+    expect(Enquiry::where('email', 'gm@example.com')->exists())->toBeFalse();
+});
+
+it('shows the playing strength dropdown on the contact page', function () {
+    $response = $this->get('/contact');
+
+    $response->assertOk()
+        ->assertSee('name="playing_strength"', false)
+        ->assertSee('Beginner')
+        ->assertSee('Intermediate')
+        ->assertSee('Advanced')
+        ->assertSee('Prefer not to say');
+});
+
+it('shows the playing strength to an administrator reading the enquiry', function () {
+    $enquiry = Enquiry::create([
+        'name' => 'Strong Player',
+        'email' => 'strong@example.com',
+        'enquiry_type' => 'join',
+        'playing_strength' => 'advanced',
+        'message' => 'I play league chess and have moved to Coventry.',
+    ]);
+
+    $this->actingAs(makeAdmin())
+        ->get("/members/enquiries/{$enquiry->id}")
+        ->assertOk()
+        ->assertSee('Advanced');
+});
+
 it('rejects a message that is too short', function () {
     $this->post('/contact', [
         'name' => 'Brief Person',
@@ -493,4 +563,35 @@ it('converts PGN dates, including partial ones', function () {
     expect(ChessNotation::pgnDate('2026.02.28'))->toBe('2026-02-28')
         ->and(ChessNotation::pgnDate('1858.??.??'))->toBe('1858-01-01')
         ->and(ChessNotation::pgnDate('not a date'))->toBeNull();
+});
+
+/* ----------------------------------------------------------------------
+ | Junior section details
+ |
+ | The junior session moved to a separate venue and requires pre-booking.
+ | These guard against the old wording creeping back in.
+ * ---------------------------------------------------------------------- */
+
+it('does not advertise junior coaching as part of a typical club night', function () {
+    $this->get('/')
+        ->assertOk()
+        ->assertDontSee('Junior section: coaching and graded games')
+        ->assertDontSee('6:00pm');
+});
+
+it('states the junior venue and pre-booking requirement on the home page', function () {
+    $this->get('/')
+        ->assertOk()
+        ->assertSee('4:30pm')
+        ->assertSee("St Oswald's Church Hall")
+        ->assertSee('Tile Hill')
+        ->assertSee('booked in advance');
+});
+
+it('states the junior venue and pre-booking requirement on the contact page', function () {
+    $this->get('/contact')
+        ->assertOk()
+        ->assertSee("St Oswald's Church Hall")
+        ->assertSee('Tile Hill')
+        ->assertSee('pre-booked');
 });

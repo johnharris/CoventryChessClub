@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\EnquiryController;
+use App\Http\Controllers\MediaController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PostController;
@@ -58,6 +59,13 @@ Route::middleware(['auth', 'active'])->prefix('members')->name('members.')->grou
     Route::get('/posts/{post}/edit', [PostController::class, 'edit'])->name('posts.edit');
     Route::put('/posts/{post}', [PostController::class, 'update'])->name('posts.update');
     Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
+
+    // Images. Uploading returns JSON so the editor can insert a photograph
+    // without the member losing what they have already typed.
+    Route::get('/images', [MediaController::class, 'index'])->name('media.index');
+    Route::post('/images', [MediaController::class, 'store'])->name('media.store');
+    Route::put('/images/{medium}', [MediaController::class, 'update'])->name('media.update');
+    Route::delete('/images/{medium}', [MediaController::class, 'destroy'])->name('media.destroy');
 
     /*
     |----------------------------------------------------------------------

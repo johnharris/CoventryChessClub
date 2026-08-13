@@ -42,6 +42,17 @@
                     @endif
                 </dd>
             </div>
+            <div class="sm:col-span-2">
+                <dt class="text-xs font-semibold tracking-wider text-stone-500 uppercase">Playing strength</dt>
+                <dd class="mt-1 text-stone-900">
+                    @if ($enquiry->strengthLabel())
+                        <span class="badge bg-club-100 text-club-800">{{ $enquiry->strengthLabel() }}</span>
+                        <span class="ml-1 text-stone-500">{{ $enquiry->strengthHint() }}</span>
+                    @else
+                        <span class="text-stone-500">Not given</span>
+                    @endif
+                </dd>
+            </div>
         </dl>
 
         <div class="mt-6 rounded-lg bg-stone-50 p-5 ring-1 ring-stone-200">
