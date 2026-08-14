@@ -24,7 +24,7 @@ This is what anyone visiting the club's web address would see.
 | **Fixtures** | One of the club's standing pages, carried across from the old site | [Desktop](desktop/06-page-fixtures.png) · [Phone](mobile/06-page-fixtures.png) |
 | **Juniors** | The junior section: its own time, its own venue at St Oswald's, the £5 charge, and the pre-booking requirement | [Desktop](desktop/07-page-juniors.png) · [Phone](mobile/07-page-juniors.png) |
 | **Fun Stuff** | Another standing page, this one with a puzzle diagram inside the text | [Desktop](desktop/08-page-fun-stuff.png) · [Phone](mobile/08-page-fun-stuff.png) |
-| **Contact the club** | How newcomers and parents get in touch, with both officers' telephone numbers alongside | [Desktop](desktop/09-contact.png) · [Phone](mobile/09-contact.png) |
+| **Contact the club** | How newcomers and parents get in touch, with both officers' telephone numbers alongside. What happens after the form is sent is shown further down | [Desktop](desktop/09-contact.png) · [Phone](mobile/09-contact.png) |
 | **Members' login** | Where members sign in. A visitor never needs this | [Desktop](desktop/10-login.png) · [Phone](mobile/10-login.png) |
 
 The boards are not pictures. They are the same board software that [lichess.org](https://lichess.org) uses, so the pieces, the colours and the feel are exactly what anyone who plays online already knows.
@@ -41,13 +41,24 @@ A reader gets the position and the question, and nothing else, until they choose
 
 ## What happens when somebody contacts the club
 
-Two things, both automatic.
+This is worth following through in order, because it is the part of the site that does work for the club rather than simply displaying information. The four pictures below are one real enquiry, from the moment a newcomer finishes typing to the letter that arrives in her inbox.
 
-**The enquirer gets an immediate reply**, signed by the club secretary, telling them when and where we meet, what the junior section costs and where it is held, that private tuition is available from our qualified trainers, both officers' telephone numbers, and the Facebook group. They are also told plainly that they are welcome simply to turn up on a Tuesday.
+| Step | What happens | View |
+|---|---|---|
+| **1. The form, filled in** | A newcomer has given her name, email and telephone number, said her enquiry is about joining, and put herself down as an intermediate player | [Desktop](desktop/22-contact-filled-in.png) · [Phone](mobile/22-contact-filled-in.png) |
+| **2. What she sees when she presses send** | An immediate confirmation that the message reached the club, so she is not left wondering whether it went anywhere | [Desktop](desktop/23-contact-confirmation.png) · [Phone](mobile/23-contact-confirmation.png) |
+| **3. The reply she receives** | The club's standard welcome letter, sent within seconds, signed by the club secretary | [Desktop](desktop/24-email-acknowledgement.png) · [Phone](mobile/24-email-acknowledgement.png) |
+| **4. What the club receives** | The enquiry itself, with her details and playing strength, and a button that opens it in the site's own inbox | [Desktop](desktop/25-email-club-notification.png) · [Phone](mobile/25-email-club-notification.png) |
 
-**The club gets the enquiry**, both by email and stored in an inbox on the site, so nothing is lost to a spam filter.
+**The reply is the wording the club already uses**, so nobody has to write it again: when and where we meet, the entrance on Broad Lane, the six teams in the Coventry and District league, the junior section's separate time, venue and £5 charge, that private tuition is available from our qualified trainers, both officers' telephone numbers, and the Facebook group. It ends by saying plainly that she is welcome simply to turn up on a Tuesday, and suggests telephoning first so somebody can look out for her.
 
-The form also asks, optionally, whether the enquirer plays at beginner, intermediate or advanced level. That gives whoever greets them on a Tuesday some idea who to pair them with. It can be left as *"Prefer not to say"*, and the form says so.
+It also states that it is an automatic acknowledgement and that a club officer will read the message and be in touch personally. That matters: an automatic letter that pretends to be personal reads badly, whereas one that is honest about what it is reads as efficient.
+
+**The enquiry reaches the club two ways at once** — by email to the officers, and stored in an inbox on the site itself. Either one alone would eventually lose a message to a spam filter or a changed email address.
+
+The playing strength question is optional and can be left as *"Prefer not to say"*, which the form makes clear. When it is answered, whoever greets a newcomer on a Tuesday already knows roughly who to pair them with.
+
+One practical point for going live: these letters cannot actually be sent until the club has hosting with a mail server configured. Until then the site stores every enquiry and shows the sender a confirmation, but the emails are written to a log file rather than delivered. Nothing is lost, and setting this up is part of putting the site online.
 
 ---
 
@@ -99,6 +110,7 @@ If anything looks wrong, reads awkwardly, or is missing, please say so — it is
 - Are the club night details correct? Tuesdays from 7:30pm at the Massey Ferguson Social Club, Banner Lane, CV5 7NL, with the entrance on Broad Lane.
 - Are the junior details correct? Tuesdays at 4:30pm, £5 a session, at St Oswald's Church Hall, Tile Hill, pre-booking essential.
 - Are the coaching details right? The site names Rhys Edwards and Ed Goodwin as the club's qualified trainers.
+- Does the automatic reply read as you would want it to? It is shown in full above, and every part of it — times, fees, venues, telephone numbers, even who signs it — can be changed by an officer without the site being rebuilt.
 - Is there anything from the old site that has been missed?
 - Does anything look confusing or hard to follow?
 - Would you write for it? There are six teams' worth of games that nobody currently writes up.
