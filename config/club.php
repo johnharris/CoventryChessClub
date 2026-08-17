@@ -115,4 +115,23 @@ return [
         'lichess' => env('CLUB_LINK_LICHESS', 'https://lichess.org/'),
     ],
 
+    /*
+    |----------------------------------------------------------------------
+    | Hosting credit
+    |----------------------------------------------------------------------
+    |
+    | A courtesy link in the footer to whoever hosts the site. Krystal's
+    | not-for-profit scheme asks for one in return for free hosting, and the
+    | club is glad to give it.
+    |
+    | Set the name to an empty string to remove the credit altogether, which
+    | is what to do if the club ever moves to a host that does not ask for one.
+    |
+    */
+    'hosting_credit' => [
+        'name' => env('CLUB_HOST_NAME', 'Krystal'),
+        'url' => env('CLUB_HOST_URL', 'https://krystal.io/'),
+        'prefix' => env('CLUB_HOST_PREFIX', 'Hosted by'),
+    ],
+
 ];

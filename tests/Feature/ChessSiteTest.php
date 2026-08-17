@@ -595,3 +595,32 @@ it('states the junior venue and pre-booking requirement on the contact page', fu
         ->assertSee('Tile Hill')
         ->assertSee('pre-booked');
 });
+
+/* ----------------------------------------------------------------------
+ * Hosting credit
+ *
+ * Krystal's not-for-profit hosting scheme asks for a link in the footer in
+ * return for free hosting, so the club has undertaken to display one. Were it
+ * ever to disappear silently the club would be quietly in breach of the terms
+ * of its own hosting, which is worth a test.
+ * ---------------------------------------------------------------------- */
+it('credits the host in the footer', function () {
+    $this->get('/')
+        ->assertOk()
+        ->assertSee('Hosted by')
+        ->assertSee('krystal.io', false);
+});
+
+it('credits the host on an interior page too', function () {
+    $this->get('/contact')
+        ->assertOk()
+        ->assertSee('Hosted by');
+});
+
+it('leaves the credit out when no host is named', function () {
+    config(['club.hosting_credit.name' => '']);
+
+    $this->get('/')
+        ->assertOk()
+        ->assertDontSee('Hosted by');
+});

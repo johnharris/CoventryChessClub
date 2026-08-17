@@ -2,6 +2,7 @@
     $venue = config('club.venue');
     $meeting = config('club.meeting');
     $links = config('club.links');
+    $host = config('club.hosting_credit');
     $footerPages = \App\Models\Page::published()->inNav()->get(['title', 'slug']);
 @endphp
 
@@ -61,6 +62,12 @@
             <p>&copy; {{ date('Y') }} {{ config('club.name') }}. All rights reserved.</p>
             <p class="flex flex-wrap items-center gap-x-4 gap-y-1">
                 <span>Boards by <a href="https://github.com/lichess-org/chessground" target="_blank" rel="noopener" class="underline underline-offset-2 hover:text-club-200">Chessground</a> (lichess)</span>
+                @if (! empty($host['name']))
+                    <span>
+                        {{ $host['prefix'] }}
+                        <a href="{{ $host['url'] }}" target="_blank" rel="noopener" class="underline underline-offset-2 hover:text-club-200">{{ $host['name'] }}</a>
+                    </span>
+                @endif
                 @guest
                     <a href="{{ route('login') }}" class="underline underline-offset-2 hover:text-club-200">Members' login</a>
                 @endguest

@@ -33,9 +33,25 @@ The absence of a Node.js requirement is deliberate and widens the choice of host
 
 For a chess club website updated a few times a month, **shared cPanel hosting is the sensible choice**. It is the cheapest, needs no maintenance, includes email addresses at the club's domain, and provides free HTTPS. When you have chosen, tell me which and I will tailor the remaining steps precisely.
 
+### Free hosting for not-for-profits
+
+Before paying for anything, ask. Krystal runs a not-for-profit review that does not require registered charity status, and the club has applied to it; the plan they offer free otherwise costs around £7 a month and comfortably exceeds what this site needs. Unlimited Web Hosting operates a similar scheme.
+
+These schemes ask for a credit link in the site's footer in return, which the club is glad to give. That credit is already built in and appears in the bottom bar of every page. It is configured rather than hard-coded, so it can be changed or removed from `.env` without touching a template:
+
+```env
+CLUB_HOST_NAME=Krystal
+CLUB_HOST_URL=https://krystal.io/
+CLUB_HOST_PREFIX="Hosted by"
+```
+
+Leave `CLUB_HOST_NAME` blank and the credit disappears entirely, which is what to do if the club later moves to a host that does not ask for one. Three tests cover this, so the credit cannot vanish unnoticed and leave the club quietly in breach of the terms of its own hosting.
+
 ### A note on the domain
 
-The club currently uses `coventrychessclub.blogspot.com`. A domain such as `coventrychessclub.org.uk` costs roughly £8–12 per year and is worth having; most hosts will register it as part of the signup. The existing Blogspot site can then link to the new address so that nothing is lost.
+The club has secured **`coventrychessclub.co.uk`**, which is the address the site will live at. Keep the registration separate from the hosting where you can: if the two are with the same company, moving host later means moving the domain as well, which is the one thing that turns an afternoon's work into a fortnight's.
+
+The existing `coventrychessclub.blogspot.com` pages should stay up and link to the new address, so that anyone arriving from an old bookmark or a search result finds their way across rather than a dead end.
 
 ---
 
