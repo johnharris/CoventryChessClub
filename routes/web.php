@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\EnquiryController;
+use App\Http\Controllers\HomepageController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\PageController;
@@ -73,6 +74,11 @@ Route::middleware(['auth', 'active'])->prefix('members')->name('members.')->grou
     |----------------------------------------------------------------------
     */
     Route::middleware('admin')->group(function () {
+        // Homepage position
+        Route::get('/homepage', [HomepageController::class, 'edit'])->name('homepage.edit');
+        Route::put('/homepage', [HomepageController::class, 'update'])->name('homepage.update');
+        Route::delete('/homepage', [HomepageController::class, 'reset'])->name('homepage.reset');
+
         // Whitelist and accounts
         Route::get('/whitelist', [MemberController::class, 'whitelist'])->name('whitelist.index');
         Route::post('/whitelist', [MemberController::class, 'storeWhitelist'])->name('whitelist.store');

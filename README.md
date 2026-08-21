@@ -33,7 +33,7 @@ Solution: 4...Nf6 keeps the balance.
 ```
 ````
 
-**For administrators**, there is additionally the whitelist and account management, the enquiry inbox, and control of the standing pages and the navigation menu.
+**For administrators**, there is additionally the whitelist and account management, the enquiry inbox, control of the standing pages and navigation menu, and a **Homepage** screen for changing the header chess position. The position can be pasted as a FEN or arranged directly on a draggable board, shown from either player's side, captioned for an event such as the Summer Cup, and restored to the original Italian Game at any time.
 
 ---
 
@@ -45,7 +45,7 @@ There is **no public sign-up**. Accounts exist only for people an administrator 
 2. The site produces a single-use invitation link, which the administrator sends to the member.
 3. The member follows the link and chooses their own password.
 
-Members may write, edit and delete their own posts. Administrators may do all of that for anybody, plus feature posts on the home page, manage accounts, edit the standing pages and read enquiries. Suspending an account revokes access on that person's very next request.
+Members may write, edit and delete their own posts. Administrators may do all of that for anybody, plus feature posts on the home page, change the homepage header position, manage accounts, edit the standing pages and read enquiries. Suspending an account revokes access on that person's very next request.
 
 ---
 
@@ -94,7 +94,7 @@ pnpm run dev     # rebuilds CSS and JS as you edit
 php artisan test
 ```
 
-Ninety-six tests cover the whitelist gate, authentication, role permissions, all three post types with FEN and PGN validation, image uploading and its safeguards, puzzle answers, the contact form and its automatic reply, and the chess notation helpers.
+One hundred and five tests cover the whitelist gate, authentication, role permissions, the administrator-controlled homepage position, all three post types with FEN and PGN validation, image uploading and its safeguards, puzzle answers, the contact form and its automatic reply, and the chess notation helpers.
 
 ---
 
@@ -105,7 +105,7 @@ app/
 ├── Http/Controllers/     Posts, pages, enquiries, members, authentication
 ├── Http/Middleware/      EnsureUserIsAdmin, EnsureUserIsActive
 ├── Mail/                 EnquiryReceived, EnquiryAcknowledgement
-├── Models/               User, Post, Page, Enquiry, Media, WhitelistEntry
+├── Models/               User, Post, Page, Enquiry, Media, HomepageSetting, WhitelistEntry
 ├── Policies/             PostPolicy — who may edit what
 ├── Rules/                ValidFen, ValidPgn
 └── Support/              ChessNotation (FEN/PGN), Markdown, ImageProcessor

@@ -356,6 +356,18 @@ What makes it worth recording is how it hid from testing. A browser check assert
 
 ---
 
+## Part 17 — Letting administrators change the homepage position
+
+The homepage originally embedded one Italian Game FEN directly in `home.blade.php`. That looked right, but changing it for a tournament result would have required editing and redeploying code. The replacement keeps the board live and responsive while moving its FEN, orientation and caption into a single `homepage_settings` database record.
+
+`HomepageSetting::current()` returns the saved record or an unsaved Italian Game default. A fresh installation therefore keeps the original homepage without inserting data during a public request. `HomepageController` exposes one administrator-only screen under **Members → Homepage**, validates the FEN with the existing `ChessNotation` helper, normalises it before storage and provides a separate action that restores all three default values.
+
+The administrator screen reuses the position builder already proven in the post editor. An administrator can paste a FEN from a completed game or drag pieces directly on the preview board, choose the side to move, select White's or Black's viewpoint, add a short event caption and save. The public hero reads that record on its next request, so a Summer Cup winning position can replace the Italian Game immediately without altering a template.
+
+Six focused feature tests cover the fresh-install fallback, administrator-only access, saving and public rendering, invalid FEN rejection, unsupported orientation rejection and restoration of the Italian Game. The full suite now passes **105 tests with 344 assertions**. Desktop browser review and a separate 390 px mobile capture confirmed that both the administrator builder and the public hero remain usable and free of horizontal overflow.
+
+---
+
 ## Appendix — Command summary
 
 ```bash

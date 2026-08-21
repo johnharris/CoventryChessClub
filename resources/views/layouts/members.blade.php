@@ -17,6 +17,9 @@
                 </x-members-tab>
 
                 @if ($user->isAdmin())
+                    <x-members-tab :href="route('members.homepage.edit')" :active="request()->routeIs('members.homepage.*')">
+                        Homepage
+                    </x-members-tab>
                     <x-members-tab :href="route('members.enquiries.index')" :active="request()->routeIs('members.enquiries.*')">
                         Enquiries
                         @if ($unread = \App\Models\Enquiry::unread()->count())
