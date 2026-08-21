@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\HomepageSetting;
 use App\Models\Page;
 use App\Models\Post;
 use Illuminate\Http\RedirectResponse;
@@ -24,6 +25,7 @@ class PageController extends Controller
             ?? Post::with(['user', 'featuredImage'])->published()->newestFirst()->first();
 
         return view('home', [
+            'homepageSettings' => HomepageSetting::current(),
             'featured' => $featured,
             'latest' => Post::with(['user', 'featuredImage'])->published()
                 ->when($featured, fn ($q) => $q->whereKeyNot($featured->id))

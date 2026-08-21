@@ -62,12 +62,14 @@
                 <div class="mx-auto w-full max-w-md lg:max-w-none">
                     <div class="rounded-2xl bg-club-950/60 p-4 ring-1 ring-club-800 sm:p-6">
                         @include('partials.static-board', [
-                            'fen' => 'r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/2NP1N2/PPP2PPP/R1BQK2R w KQkq - 4 6',
-                            'orientation' => 'white',
+                            'fen' => $homepageSettings->hero_fen,
+                            'orientation' => $homepageSettings->hero_orientation,
                         ])
-                        <p class="mt-3 text-center text-sm text-club-300">
-                            The Italian Game — one of the openings you will meet on a club night
-                        </p>
+                        @if ($homepageSettings->hero_caption)
+                            <p class="mt-3 text-center text-sm text-club-300">
+                                {{ $homepageSettings->hero_caption }}
+                            </p>
+                        @endif
                     </div>
                 </div>
             </div>
