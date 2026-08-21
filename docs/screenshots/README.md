@@ -50,7 +50,7 @@ This is worth following through in order, because it is the part of the site tha
 | **3. The reply she receives** | The club's standard welcome letter, sent within seconds, signed by the club secretary | [Desktop](desktop/24-email-acknowledgement.png) · [Phone](mobile/24-email-acknowledgement.png) |
 | **4. What the club receives** | The enquiry itself, with her details and playing strength, and a button that opens it in the site's own inbox | [Desktop](desktop/25-email-club-notification.png) · [Phone](mobile/25-email-club-notification.png) |
 
-**The reply is the wording the club already uses**, so nobody has to write it again: when and where we meet, the entrance on Broad Lane, the six teams in the Coventry and District league, the junior section's separate time, venue and £5 charge, that private tuition is available from our qualified trainers, both officers' telephone numbers, and the Facebook group. It ends by saying plainly that she is welcome simply to turn up on a Tuesday, and suggests telephoning first so somebody can look out for her.
+**The reply is the wording the club already uses**, so nobody has to write it again: when and where we meet, the six teams in the Coventry and District league, the junior section's separate time, venue and £5 charge, that private tuition is available from our qualified trainers, both officers' telephone numbers, and the Facebook group. It ends by saying plainly that she is welcome simply to turn up on a Tuesday, and suggests telephoning first so somebody can look out for her.
 
 It also states that it is an automatic acknowledgement and that a club officer will read the message and be in touch personally. That matters: an automatic letter that pretends to be personal reads badly, whereas one that is honest about what it is reads as efficient.
 
@@ -107,7 +107,7 @@ A **Swiss tournament system**: entering the players, working out the pairings fo
 
 If anything looks wrong, reads awkwardly, or is missing, please say so — it is far easier to change now than after the site is live. In particular:
 
-- Are the club night details correct? Tuesdays from 7:30pm at the Massey Ferguson Social Club, Banner Lane, CV5 7NL, with the entrance on Broad Lane.
+- Are the club night details correct? Tuesdays from 7:30pm at the Massey Ferguson Social Club, Broad Lane, Coventry, CV5 7NL.
 - Are the junior details correct? Tuesdays at 4:30pm, £5 a session, at St Oswald's Church Hall, Tile Hill, pre-booking essential.
 - Are the coaching details right? The site names Rhys Edwards and Ed Goodwin as the club's qualified trainers.
 - Does the automatic reply read as you would want it to? It is shown in full above, and every part of it — times, fees, venues, telephone numbers, even who signs it — can be changed by an officer without the site being rebuilt.

@@ -46,13 +46,10 @@ return [
 
     'venue' => [
         'name' => env('CLUB_VENUE_NAME', 'Massey Ferguson Social Club'),
-        // Postal address is Banner Lane, but the entrance visitors use is on
-        // Broad Lane. Both are shown, because sending a newcomer to a door that
-        // does not exist is the fastest way to lose them.
-        'address' => env('CLUB_VENUE_ADDRESS', 'Banner Lane, Coventry'),
+        'address' => env('CLUB_VENUE_ADDRESS', 'Broad Lane, Coventry'),
         'postcode' => env('CLUB_VENUE_POSTCODE', 'CV5 7NL'),
-        'entrance' => env('CLUB_VENUE_ENTRANCE', 'Entrance on Broad Lane'),
-        'map_url' => env('CLUB_VENUE_MAP_URL', 'https://www.google.com/maps/search/?api=1&query=Massey+Ferguson+Social+Club+Banner+Lane+Coventry+CV5+7NL'),
+        'entrance' => env('CLUB_VENUE_ENTRANCE', ''),
+        'map_url' => env('CLUB_VENUE_MAP_URL', 'https://www.google.com/maps/search/?api=1&query=Massey+Ferguson+Social+Club+Broad+Lane+Coventry+CV5+7NL'),
         'website' => env('CLUB_VENUE_WEBSITE', 'https://www.masseyfergusonsocialclub.co.uk/'),
     ],
 
