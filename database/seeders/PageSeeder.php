@@ -58,9 +58,8 @@ confirmed, so that is the place to check before travelling to a match.
 
 ## Home matches
 
-Home fixtures are played at the Massey Ferguson Social Club, Banner Lane, Coventry,
-CV5 7NL. Please note that the entrance is on Broad Lane.
-There is parking on site and a bar. Visiting teams are always welcome — please arrive
+Home fixtures are played at the Massey Ferguson Social Club, Broad Lane, Coventry,
+CV5 7NL. There is parking on site and a bar. Visiting teams are always welcome — please arrive
 for a 7:30pm start.
 MD,
             ],

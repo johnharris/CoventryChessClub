@@ -107,8 +107,7 @@ it('includes the club details a newcomer needs in the welcome letter', function 
     expect($html)
         ->toContain('Hi Jane Newcomer')
         ->toContain('Massey Ferguson Social Club')
-        ->toContain('Banner Lane')
-        ->toContain('Broad Lane')          // the entrance, which differs from the postal address
+        ->toContain('Broad Lane')
         ->toContain('CV5 7NL')
         ->toContain('7:30pm')
         ->toContain('4:30pm')
@@ -119,6 +118,8 @@ it('includes the club details a newcomer needs in the welcome letter', function 
         ->toContain('01455 221297')
         ->toContain('facebook.com/groups/coventrychessclub')
         ->toContain('Kind Regards');
+
+    expect(config('club.venue.entrance'))->toBe('');
 });
 
 it('leaves the 4NCL out of the welcome letter unless the club switches it on', function () {
