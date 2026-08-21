@@ -11,8 +11,9 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
 /**
- * Notifies the club when someone uses the contact form. Sent only when
- * CLUB_ENQUIRY_EMAIL is set; the enquiry is always stored in the site inbox.
+ * Notifies the club when someone uses the contact form. One private copy is
+ * sent to every address in CLUB_ENQUIRY_EMAILS; the enquiry is always stored in
+ * the site inbox regardless of mail delivery.
  */
 class EnquiryReceived extends Mailable
 {

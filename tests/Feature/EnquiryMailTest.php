@@ -2,12 +2,14 @@
 
 use App\Mail\EnquiryAcknowledgement;
 use App\Mail\EnquiryReceived;
+use App\Models\Enquiry;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Testing\TestResponse;
 
 uses(RefreshDatabase::class);
 
-function submitEnquiry(array $overrides = []): \Illuminate\Testing\TestResponse
+function submitEnquiry(array $overrides = []): TestResponse
 {
     return test()->post('/contact', array_merge([
         'name' => 'Jane Newcomer',
@@ -27,19 +29,45 @@ it('sends the standard welcome letter to whoever used the contact form', functio
     });
 });
 
-it('sends a notification to the club when a notification address is configured', function () {
-    config(['club.enquiry_email' => 'secretary@coventrychessclub.co.uk']);
+it('sends a private notification to each configured administrator', function () {
+    config(['club.enquiry_emails' => [
+        'simonw21@yahoo.com',
+        'david_filer@hotmail.com',
+    ]]);
     Mail::fake();
 
     submitEnquiry()->assertRedirect();
 
+    Mail::assertSent(EnquiryReceived::class, 2);
     Mail::assertSent(EnquiryReceived::class, function ($mail) {
-        return $mail->hasTo('secretary@coventrychessclub.co.uk');
+        return $mail->hasTo('simonw21@yahoo.com') && count($mail->to) === 1;
+    });
+    Mail::assertSent(EnquiryReceived::class, function ($mail) {
+        return $mail->hasTo('david_filer@hotmail.com') && count($mail->to) === 1;
     });
 });
 
+it('directs replies to the acknowledgement to the first configured administrator', function () {
+    config(['club.enquiry_emails' => [
+        'simonw21@yahoo.com',
+        'david_filer@hotmail.com',
+    ]]);
+
+    $enquiry = Enquiry::create([
+        'name' => 'Jane Newcomer',
+        'email' => 'jane@example.com',
+        'enquiry_type' => 'join',
+        'message' => 'Hello there, I would like to visit the club.',
+    ]);
+
+    $replyTo = (new EnquiryAcknowledgement($enquiry))->envelope()->replyTo;
+
+    expect($replyTo)->toHaveCount(1)
+        ->and($replyTo[0]->address)->toBe('simonw21@yahoo.com');
+});
+
 it('still acknowledges the enquirer when no club notification address is set', function () {
-    config(['club.enquiry_email' => null]);
+    config(['club.enquiry_emails' => []]);
     Mail::fake();
 
     submitEnquiry()->assertRedirect();
@@ -63,11 +91,11 @@ it('stores the enquiry even when sending the email fails', function () {
 
     submitEnquiry()->assertRedirect()->assertSessionHasNoErrors();
 
-    expect(\App\Models\Enquiry::where('email', 'jane@example.com')->exists())->toBeTrue();
+    expect(Enquiry::where('email', 'jane@example.com')->exists())->toBeTrue();
 });
 
 it('includes the club details a newcomer needs in the welcome letter', function () {
-    $enquiry = \App\Models\Enquiry::create([
+    $enquiry = Enquiry::create([
         'name' => 'Jane Newcomer',
         'email' => 'jane@example.com',
         'enquiry_type' => 'join',
@@ -94,7 +122,7 @@ it('includes the club details a newcomer needs in the welcome letter', function 
 });
 
 it('leaves the 4NCL out of the welcome letter unless the club switches it on', function () {
-    $enquiry = \App\Models\Enquiry::create([
+    $enquiry = Enquiry::create([
         'name' => 'Jane Newcomer',
         'email' => 'jane@example.com',
         'enquiry_type' => 'join',
@@ -109,7 +137,7 @@ it('leaves the 4NCL out of the welcome letter unless the club switches it on', f
 });
 
 it('signs the welcome letter with the name and role on separate lines', function () {
-    $enquiry = \App\Models\Enquiry::create([
+    $enquiry = Enquiry::create([
         'name' => 'Jane Newcomer',
         'email' => 'jane@example.com',
         'enquiry_type' => 'join',
@@ -126,7 +154,7 @@ it('signs the welcome letter with the name and role on separate lines', function
 });
 
 it('keeps the league teams and the junior section in separate paragraphs', function () {
-    $enquiry = \App\Models\Enquiry::create([
+    $enquiry = Enquiry::create([
         'name' => 'Jane Newcomer',
         'email' => 'jane@example.com',
         'enquiry_type' => 'join',
@@ -139,7 +167,7 @@ it('keeps the league teams and the junior section in separate paragraphs', funct
 });
 
 it('does not sign the club emails as Laravel', function () {
-    $enquiry = \App\Models\Enquiry::create([
+    $enquiry = Enquiry::create([
         'name' => 'Jane Newcomer',
         'email' => 'jane@example.com',
         'enquiry_type' => 'join',

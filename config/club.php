@@ -11,15 +11,22 @@
 |
 */
 
+$enquiryEmails = array_values(array_unique(array_filter(
+    array_map('trim', explode(',', (string) env('CLUB_ENQUIRY_EMAILS', env('CLUB_ENQUIRY_EMAIL', '')))),
+    fn (string $email): bool => filter_var($email, FILTER_VALIDATE_EMAIL) !== false,
+)));
+
 return [
 
     'name' => env('CLUB_NAME', 'Coventry Chess Club'),
 
     'tagline' => env('CLUB_TAGLINE', 'Chess in Coventry every Tuesday evening — all standards welcome'),
 
-    // Where contact form notifications are sent. Leave blank to store enquiries
-    // in the site inbox only (the default until SMTP is configured).
-    'enquiry_email' => env('CLUB_ENQUIRY_EMAIL'),
+    // Every address receives its own copy of a contact-form notification. A
+    // comma-separated list keeps deployment simple while avoiding disclosure of
+    // the other administrators' addresses in the delivered message. The old
+    // singular variable remains a fallback for existing installations.
+    'enquiry_emails' => $enquiryEmails,
 
     'meeting' => [
         'day' => env('CLUB_MEETING_DAY', 'Tuesday'),

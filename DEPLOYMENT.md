@@ -102,9 +102,9 @@ SIMON_PASSWORD=choose-something-long-and-unique
 DAVE_PASSWORD=choose-something-different
 JOHN_PASSWORD=choose-something-different-again
 
-# Where contact form enquiries are emailed. Leave blank to store them on the
-# site only; they are always stored regardless.
-CLUB_ENQUIRY_EMAIL=secretary@coventrychessclub.co.uk
+# Where contact form enquiries are emailed. Separate multiple addresses with
+# commas; each person receives a private copy and the enquiry is always stored.
+CLUB_ENQUIRY_EMAILS=simonw21@yahoo.com,david_filer@hotmail.com
 
 # Outbound email, once your host has given you SMTP details.
 # Until these are set, MAIL_MAILER=log writes emails to storage/logs instead of
