@@ -16,9 +16,9 @@ use Illuminate\Queue\SerializesModels;
  * how much, and who do I speak to — so that nobody is left waiting on a
  * volunteer to find a spare evening.
  *
- * Replies are directed to the club's own enquiry address where one is
- * configured, so that a newcomer answering this email reaches a person rather
- * than an unattended mailbox.
+ * Replies are directed to the first configured enquiry recipient, so that a
+ * newcomer answering this email reaches a person rather than an unattended
+ * mailbox. All configured administrators still receive the original enquiry.
  */
 class EnquiryAcknowledgement extends Mailable
 {
@@ -32,7 +32,7 @@ class EnquiryAcknowledgement extends Mailable
             subject: config('club.auto_reply.subject'),
         );
 
-        if ($replyTo = config('club.enquiry_email')) {
+        if ($replyTo = config('club.enquiry_emails.0')) {
             $envelope->replyTo = [new Address($replyTo, config('club.name'))];
         }
 

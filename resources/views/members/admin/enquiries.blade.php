@@ -10,8 +10,8 @@
             </h1>
             <p class="mt-1.5 text-stone-600">
                 Messages sent through the contact form.
-                @if (! config('club.enquiry_email'))
-                    They are stored here only, because no notification address has been configured yet.
+                @if (empty(config('club.enquiry_emails', [])))
+                    They are stored here only, because no notification addresses have been configured yet.
                 @endif
             </p>
         </div>

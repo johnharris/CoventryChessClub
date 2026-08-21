@@ -195,7 +195,7 @@ The `Caption`, `Orientation` and `Solution` lines are all optional. CommonMark i
 
 `MemberController` holds the dashboard, profile and password screens, plus administration of the whitelist and accounts. It contains two deliberate safeguards: an administrator cannot remove their own access, and the site refuses to be left with no active administrator.
 
-`EnquiryController` handles the public contact form and the administrators' inbox. The form is rate limited to three submissions per ten minutes per IP address and carries a honeypot field that real visitors never see. Email is attempted only when `CLUB_ENQUIRY_EMAIL` is configured, and a mail failure is logged without ever losing the enquiry.
+`EnquiryController` handles the public contact form and the administrators' inbox. The form is rate limited to three submissions per ten minutes per IP address and carries a honeypot field that real visitors never see. When `CLUB_ENQUIRY_EMAILS` contains one or more comma-separated addresses, each administrator receives a private notification copy; every send is attempted independently, and a mail failure is logged without ever losing the enquiry.
 
 `PageController` serves the home page and the standing pages, together with their administration screens.
 

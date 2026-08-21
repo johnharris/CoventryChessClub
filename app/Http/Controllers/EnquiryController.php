@@ -59,11 +59,13 @@ class EnquiryController extends Controller
             'ip_address' => $request->ip(),
         ]);
 
-        // Notify the club, if a notification address has been configured.
-        if ($to = config('club.enquiry_email')) {
+        // Notify every configured administrator independently. Separate messages
+        // keep personal addresses private and allow one delivery to succeed even
+        // if another recipient's provider rejects the message.
+        foreach (config('club.enquiry_emails', []) as $recipient) {
             $this->trySend(
-                fn () => Mail::to($to)->send(new EnquiryReceived($enquiry)),
-                'Enquiry notification to the club'
+                fn () => Mail::to($recipient)->send(new EnquiryReceived($enquiry)),
+                'Enquiry notification to '.$recipient
             );
         }
 
