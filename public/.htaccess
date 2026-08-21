@@ -5,6 +5,14 @@
 
     RewriteEngine On
 
+    # Keep certificate validation reachable over plain HTTP.
+    RewriteRule ^\.well-known/acme-challenge/ - [L]
+
+    # Use one secure canonical host for every public URL.
+    RewriteCond %{HTTPS} !=on [OR]
+    RewriteCond %{HTTP_HOST} !^coventrychessclub\.co\.uk$ [NC]
+    RewriteRule ^ https://coventrychessclub.co.uk%{REQUEST_URI} [R=301,L,NE]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
