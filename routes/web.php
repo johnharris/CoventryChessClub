@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\EmailSettingsController;
 use App\Http\Controllers\EnquiryController;
 use App\Http\Controllers\HomepageController;
 use App\Http\Controllers\MediaController;
@@ -78,6 +79,10 @@ Route::middleware(['auth', 'active'])->prefix('members')->name('members.')->grou
         Route::get('/homepage', [HomepageController::class, 'edit'])->name('homepage.edit');
         Route::put('/homepage', [HomepageController::class, 'update'])->name('homepage.update');
         Route::delete('/homepage', [HomepageController::class, 'reset'])->name('homepage.reset');
+
+        // Automated emails
+        Route::get('/emails', [EmailSettingsController::class, 'edit'])->name('emails.edit');
+        Route::post('/emails/{template}', [EmailSettingsController::class, 'handle'])->name('emails.handle');
 
         // Whitelist and accounts
         Route::get('/whitelist', [MemberController::class, 'whitelist'])->name('whitelist.index');

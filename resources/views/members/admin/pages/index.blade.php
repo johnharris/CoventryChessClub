@@ -42,9 +42,9 @@
                         @if ($page->show_in_nav)
                             <span class="badge bg-stone-100 text-stone-600">In menu</span>
                         @endif
-                        @if ($page->is_published)
-                            <a href="{{ route('pages.show', $page) }}" class="btn-ghost !py-1.5 text-xs">View</a>
-                        @endif
+                        <a href="{{ route('pages.show', $page) }}" class="btn-ghost !py-1.5 text-xs">
+                            {{ $page->is_published ? 'View' : 'Preview' }}
+                        </a>
                         <a href="{{ route('members.pages.edit', $page) }}" class="btn-secondary !py-1.5 text-xs">Edit</a>
                     </div>
                 </div>

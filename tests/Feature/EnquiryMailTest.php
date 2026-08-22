@@ -2,6 +2,7 @@
 
 use App\Mail\EnquiryAcknowledgement;
 use App\Mail\EnquiryReceived;
+use App\Models\EmailTemplate;
 use App\Models\Enquiry;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
@@ -77,7 +78,10 @@ it('still acknowledges the enquirer when no club notification address is set', f
 });
 
 it('does not acknowledge the enquirer when the automatic reply is switched off', function () {
-    config(['club.auto_reply.enabled' => false]);
+    EmailTemplate::query()->create([
+        ...EmailTemplate::defaults(EmailTemplate::ENQUIRY_ACKNOWLEDGEMENT),
+        'is_enabled' => false,
+    ]);
     Mail::fake();
 
     submitEnquiry()->assertRedirect();

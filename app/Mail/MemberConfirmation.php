@@ -3,17 +3,16 @@
 namespace App\Mail;
 
 use App\Models\EmailTemplate;
-use App\Models\Enquiry;
+use App\Models\User;
 use App\Support\EmailTemplateVariables;
 use App\Support\Markdown;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class EnquiryAcknowledgement extends Mailable
+class MemberConfirmation extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -21,7 +20,7 @@ class EnquiryAcknowledgement extends Mailable
 
     /** @param array<string, mixed>|null $templateData */
     public function __construct(
-        public Enquiry $enquiry,
+        public User $member,
         public ?array $templateData = null,
         public bool $isTest = false,
     ) {}
@@ -30,15 +29,9 @@ class EnquiryAcknowledgement extends Mailable
     {
         $subject = $this->template()->renderSubject($this->variables());
 
-        $envelope = new Envelope(
+        return new Envelope(
             subject: $this->isTest ? '[Test] '.$subject : $subject,
         );
-
-        if ($replyTo = config('club.enquiry_emails.0')) {
-            $envelope->replyTo = [new Address($replyTo, config('club.name'))];
-        }
-
-        return $envelope;
     }
 
     public function content(): Content
@@ -52,7 +45,7 @@ class EnquiryAcknowledgement extends Mailable
                 'signature' => $template->signature,
                 'signatureRole' => $template->signature_role,
                 'isTest' => $this->isTest,
-                'footer' => 'This is an automatic acknowledgement of a message sent through the club website. A club officer will read the enquiry and be in touch personally.',
+                'footer' => 'This message confirms that a member account was created on the Coventry Chess Club website.',
             ],
         );
     }
@@ -66,15 +59,15 @@ class EnquiryAcknowledgement extends Mailable
     {
         return $this->resolvedTemplate ??= $this->templateData
             ? new EmailTemplate([
-                'key' => EmailTemplate::ENQUIRY_ACKNOWLEDGEMENT,
+                'key' => EmailTemplate::MEMBER_CONFIRMATION,
                 ...$this->templateData,
             ])
-            : EmailTemplate::current(EmailTemplate::ENQUIRY_ACKNOWLEDGEMENT);
+            : EmailTemplate::current(EmailTemplate::MEMBER_CONFIRMATION);
     }
 
     /** @return array<string, string> */
     protected function variables(): array
     {
-        return EmailTemplateVariables::forEnquiry($this->enquiry);
+        return EmailTemplateVariables::forMember($this->member);
     }
 }
