@@ -3,11 +3,15 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Mail\MemberConfirmation;
+use App\Models\EmailTemplate;
 use App\Models\User;
 use App\Models\WhitelistEntry;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
@@ -84,6 +88,15 @@ class RegisterController extends Controller
 
         Auth::login($user);
         $request->session()->regenerate();
+
+        if (EmailTemplate::current(EmailTemplate::MEMBER_CONFIRMATION)->is_enabled) {
+            try {
+                Mail::to($user->email, $user->publicName())
+                    ->send(new MemberConfirmation($user));
+            } catch (\Throwable $exception) {
+                Log::warning('Member confirmation to '.$user->email.' could not be sent: '.$exception->getMessage());
+            }
+        }
 
         return redirect()->route('members.dashboard')
             ->with('status', 'Your account is ready. Welcome to the club site.');

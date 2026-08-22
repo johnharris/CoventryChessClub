@@ -39,9 +39,17 @@ class PageController extends Controller
 
     public function show(Page $page): View
     {
-        abort_unless($page->is_published, 404);
+        $administratorPreview = ! $page->is_published
+            && auth()->check()
+            && auth()->user()->is_active
+            && auth()->user()->isAdmin();
 
-        return view('pages.show', ['page' => $page]);
+        abort_unless($page->is_published || $administratorPreview, 404);
+
+        return view('pages.show', [
+            'page' => $page,
+            'administratorPreview' => $administratorPreview,
+        ]);
     }
 
     /* =====================================================================

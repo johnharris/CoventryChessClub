@@ -26,6 +26,9 @@
                             <span class="ml-1.5 rounded-full bg-red-100 px-1.5 py-0.5 text-xs font-bold text-red-700">{{ $unread }}</span>
                         @endif
                     </x-members-tab>
+                    <x-members-tab :href="route('members.emails.edit')" :active="request()->routeIs('members.emails.*')">
+                        Emails
+                    </x-members-tab>
                     <x-members-tab :href="route('members.whitelist.index')" :active="request()->routeIs('members.whitelist.*') || request()->routeIs('members.users.*')">
                         Members
                     </x-members-tab>

@@ -368,6 +368,22 @@ Six focused feature tests cover the fresh-install fallback, administrator-only a
 
 ---
 
+## Part 18 — Administrator-managed emails and a private Markdown guide
+
+The original enquiry acknowledgement was a fixed Blade template. Administrators could update club facts through configuration, but changing the message itself still required a code deployment. The new `email_templates` table stores one row for the enquiry acknowledgement and one for the member confirmation. `EmailTemplate::current()` returns a saved row or an unsaved approved default, so existing behaviour survives the migration and no database write occurs during an ordinary request.
+
+The **Members → Emails** screen keeps the two messages on separate tabs. Each has an enabled switch, subject, Markdown body, optional signatory and role, plus save, preview, test-send and restore-default actions. Preview and test actions render the unsaved form values without changing the database. Tests use fictional sample recipients, are labelled clearly and go only to the signed-in administrator.
+
+Administrators can insert only the placeholders listed beside each editor. The controller rejects unknown placeholders, every value is escaped before substitution, and the shared Markdown renderer strips raw HTML. This permits useful formatting without turning an email template into executable administrator-supplied HTML. The live enquiry flow remains failure tolerant: the enquiry is stored before email delivery. Registration follows the same rule, so an SMTP failure can never prevent a whitelisted member from receiving their account.
+
+Successful whitelist registration now sends the configurable **member confirmation** email. It confirms the chosen account email and provides the members-area login link, but deliberately never contains or attempts to recover the member's password.
+
+`MarkdownCheatsheetSeeder` creates a **Markdown Cheatsheet** standing page with `is_published` and `show_in_nav` both false. It demonstrates headings, emphasis, links, lists, quotations, tables, images, code, escaping and the custom fenced `fen` block. The seeder uses `firstOrCreate`, so rerunning it cannot overwrite edits made by an administrator. Guests and ordinary members receive a 404 for hidden pages; active administrators receive a clearly labelled rendered preview and can return directly to the editor.
+
+Twelve focused tests cover administrator-only access, defaults, editing, placeholder validation, safe previews, test recipients, reset behaviour, both live email flows, disabled messages, SMTP failure resilience, cheatsheet privacy and preservation of administrator edits. The complete suite passes **119 tests with 425 assertions**, and desktop browser verification confirmed the two-tab Emails editor and the fully rendered interactive cheatsheet.
+
+---
+
 ## Appendix — Command summary
 
 ```bash

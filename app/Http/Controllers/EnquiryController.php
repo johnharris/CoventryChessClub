@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\EnquiryAcknowledgement;
 use App\Mail\EnquiryReceived;
+use App\Models\EmailTemplate;
 use App\Models\Enquiry;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -72,7 +73,7 @@ class EnquiryController extends Controller
         // Acknowledge the enquirer with the club's standard welcome letter. Sent
         // independently of the notification above so that a failure of one does
         // not prevent the other.
-        if (config('club.auto_reply.enabled')) {
+        if (EmailTemplate::current(EmailTemplate::ENQUIRY_ACKNOWLEDGEMENT)->is_enabled) {
             $this->trySend(
                 fn () => Mail::to($enquiry->email, $enquiry->name)
                     ->send(new EnquiryAcknowledgement($enquiry)),

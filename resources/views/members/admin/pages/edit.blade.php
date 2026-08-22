@@ -11,9 +11,9 @@
                 last saved {{ $page->updated_at->diffForHumans() }}
             </p>
         </div>
-        @if ($page->is_published)
-            <a href="{{ route('pages.show', $page) }}" class="btn-secondary !py-2 text-xs">View on the site</a>
-        @endif
+        <a href="{{ route('pages.show', $page) }}" class="btn-secondary !py-2 text-xs">
+            {{ $page->is_published ? 'View on the site' : 'Preview unpublished page' }}
+        </a>
     </header>
 
     <form method="POST" action="{{ route('members.pages.update', $page) }}">

@@ -35,6 +35,8 @@ Solution: 4...Nf6 keeps the balance.
 
 **For administrators**, there is additionally the whitelist and account management, the enquiry inbox, control of the standing pages and navigation menu, and a **Homepage** screen for changing the header chess position. The position can be pasted as a FEN or arranged directly on a draggable board, shown from either player's side, captioned for an event such as the Summer Cup, and restored to the original Italian Game at any time.
 
+The **Emails** screen lets administrators edit, preview, test-send, disable or restore the automatic enquiry acknowledgement and the confirmation sent after a member completes registration. Messages use safe Markdown and approved placeholders rather than raw HTML. An unpublished **Markdown Cheatsheet** is created in the Pages area as a private, rendered reference for headings, emphasis, links, lists, tables, images, code and chess-position blocks.
+
 ---
 
 ## How access works
@@ -45,7 +47,7 @@ There is **no public sign-up**. Accounts exist only for people an administrator 
 2. The site produces a single-use invitation link, which the administrator sends to the member.
 3. The member follows the link and chooses their own password.
 
-Members may write, edit and delete their own posts. Administrators may do all of that for anybody, plus feature posts on the home page, change the homepage header position, manage accounts, edit the standing pages and read enquiries. Suspending an account revokes access on that person's very next request.
+Members may write, edit and delete their own posts. Administrators may do all of that for anybody, plus feature posts on the home page, change the homepage header position, manage accounts, edit and privately preview standing pages, customize automated emails and read enquiries. Suspending an account revokes access on that person's very next request.
 
 ---
 
@@ -94,7 +96,7 @@ pnpm run dev     # rebuilds CSS and JS as you edit
 php artisan test
 ```
 
-One hundred and five tests cover the whitelist gate, authentication, role permissions, the administrator-controlled homepage position, all three post types with FEN and PGN validation, image uploading and its safeguards, puzzle answers, the contact form and its automatic reply, and the chess notation helpers.
+One hundred and nineteen tests with 425 assertions cover the whitelist gate, authentication, role permissions, administrator-controlled homepage and email settings, safe previews and placeholders, the private Markdown cheatsheet, all three post types with FEN and PGN validation, image uploading and its safeguards, puzzle answers, contact and member emails, mail-failure resilience, and the chess notation helpers.
 
 ---
 
@@ -104,8 +106,8 @@ One hundred and five tests cover the whitelist gate, authentication, role permis
 app/
 ├── Http/Controllers/     Posts, pages, enquiries, members, authentication
 ├── Http/Middleware/      EnsureUserIsAdmin, EnsureUserIsActive
-├── Mail/                 EnquiryReceived, EnquiryAcknowledgement
-├── Models/               User, Post, Page, Enquiry, Media, HomepageSetting, WhitelistEntry
+├── Mail/                 EnquiryReceived, EnquiryAcknowledgement, MemberConfirmation
+├── Models/               User, Post, Page, Enquiry, Media, HomepageSetting, EmailTemplate, WhitelistEntry
 ├── Policies/             PostPolicy — who may edit what
 ├── Rules/                ValidFen, ValidPgn
 └── Support/              ChessNotation (FEN/PGN), Markdown, ImageProcessor
@@ -118,11 +120,12 @@ resources/
 └── views/                Blade templates
 
 config/club.php           Club name, meeting times, venue, league links
+config/email_templates.php Approved default automated-email wording and placeholders
 database/                 Migrations and seeders
 tests/Feature/            The test suite
 ```
 
-`config/club.php` is worth knowing about: the club's name, meeting times, venue address and league links live there and can be changed through `.env` without editing any template.
+`config/club.php` is worth knowing about: the club's name, meeting times, venue address and league links live there and can be changed through `.env` without editing any template. The administrator Emails screen stores customized messages in the database while `config/email_templates.php` retains the approved restore defaults.
 
 ---
 
