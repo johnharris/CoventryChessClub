@@ -8,6 +8,7 @@
         $venue = config('club.venue');
         $meeting = config('club.meeting');
         $juniorsVenue = config('club.juniors_venue');
+        $links = config('club.links');
     @endphp
 
     <div class="border-b border-stone-200 bg-white">
@@ -205,6 +206,17 @@
                         <a href="{{ route('login') }}" class="font-semibold text-club-700 hover:text-club-900">Sign in here</a>.
                         Accounts are set up by the club administrators.
                     </p>
+                </div>
+
+                <div class="card p-6">
+                    <h2 class="text-sm font-semibold tracking-wider text-stone-500 uppercase">Facebook</h2>
+                    <p class="mt-3 text-sm leading-relaxed text-stone-700">
+                        Follow club news and join the conversation in the Coventry Chess Club group.
+                    </p>
+                    <a href="{{ $links['facebook'] }}" target="_blank" rel="noopener noreferrer"
+                       class="mt-4 inline-block text-sm font-semibold text-club-700 hover:text-club-900">
+                        Visit our Facebook group &rarr;
+                    </a>
                 </div>
             </aside>
         </div>

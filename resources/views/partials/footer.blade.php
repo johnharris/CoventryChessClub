@@ -54,6 +54,15 @@
                     <li><a href="{{ $links['coventry_league'] }}" target="_blank" rel="noopener" class="text-club-300 transition-colors hover:text-white">Coventry &amp; District League</a></li>
                     <li><a href="{{ $links['leamington_league'] }}" target="_blank" rel="noopener" class="text-club-300 transition-colors hover:text-white">Leamington League</a></li>
                     <li><a href="{{ $links['ecf'] }}" target="_blank" rel="noopener" class="text-club-300 transition-colors hover:text-white">English Chess Federation</a></li>
+                    <li>
+                        <a href="{{ $links['facebook'] }}" target="_blank" rel="noopener noreferrer"
+                           class="inline-flex items-center gap-1.5 text-club-300 transition-colors hover:text-white">
+                            <svg class="h-4 w-4 shrink-0" style="color: #1877F2" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.436H7.078v-3.491h3.047V9.414c0-3.027 1.792-4.699 4.533-4.699 1.313 0 2.686.236 2.686.236v2.974h-1.513c-1.49 0-1.956.932-1.956 1.889v2.259h3.328l-.532 3.491h-2.796V24C19.612 23.094 24 18.1 24 12.073Z" />
+                            </svg>
+                            Facebook group
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
