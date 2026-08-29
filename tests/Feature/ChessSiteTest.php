@@ -596,6 +596,20 @@ it('states the junior venue and pre-booking requirement on the contact page', fu
         ->assertSee('pre-booked');
 });
 
+it('links to the Facebook group from the contact page', function () {
+    $this->get('/contact')
+        ->assertOk()
+        ->assertSee('Visit our Facebook group')
+        ->assertSee(config('club.links.facebook'), false);
+});
+
+it('links to the Facebook group from the shared footer', function () {
+    $this->get('/')
+        ->assertOk()
+        ->assertSee('Facebook group')
+        ->assertSee(config('club.links.facebook'), false);
+});
+
 /* ----------------------------------------------------------------------
  * Hosting credit
  *
